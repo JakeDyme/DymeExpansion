@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>DymeExpansion</id>
+    <version>1.0.0</version>
+    <authors>Jake Dyme</authors>
+    <owners>Jake Dyme</owners>
+	<licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
+    <projectUrl>https://github.com/JakeDyme/DymeExpansion</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/JakeDyme/DymeExpansion/master/bushbaby.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Allows you to make configs that will be expanded into test cases</description>
+    <releaseNotes>Initial release</releaseNotes>
+    <copyright>Copyright 2019</copyright>
+    <tags>Fluent Dyme Expansion Configuration Automation Tests</tags>
+    <dependencies>
+    </dependencies>
+  </metadata>
+</package>
