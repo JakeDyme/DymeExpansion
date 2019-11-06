@@ -1,18 +1,14 @@
-using DymeExpansion.Enums;
-using DymeExpansion.Models;
-using DymeExpansion.Services;
+using DymeExpansion.Core.Enums;
+using DymeExpansion.Core.Models;
+using DymeExpansion.Core.Services;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DymeExpansion.Core.Tests
+namespace DymeExpansion.Core.Tests.Services
 {
-  public class Tests
+  public class TestCaseLoader_Tests
   {
-    [SetUp]
-    public void Setup()
-    {
-    }
 
     private ValueNode GetMockNodeTreeUsingFluentTreeBuilder()
     {
@@ -343,7 +339,7 @@ namespace DymeExpansion.Core.Tests
     {
       var mockNodeTree = GetMockNodeTreeUsingFluentTreeBuilder();
       var expectedTestCases = ResultTestCasesForAllMocks().Select(tc => CaseToString(tc)).OrderBy(s => s).ToList();
-      var actualTestCases = TestCaseLoader.CasesFromNodeTree(mockNodeTree).Select(tc => CaseToString(tc)).OrderBy(s => s).ToList();
+      var actualTestCases = new TestCaseLoader().CasesFromNodeTree(mockNodeTree).Select(tc => CaseToString(tc)).OrderBy(s => s).ToList();
       //File.WriteAllText(Directory.GetCurrentDirectory() + "\\ExpectedCases.xls", expectedTestCases.Aggregate((a,b) => $"{a}\n{b}"));
       //File.WriteAllText(Directory.GetCurrentDirectory() + "\\ActualCases.xls", actualTestCases.Aggregate((a,b) => $"{a}\n{b}"));
       CollectionAssert.AreEquivalent(expectedTestCases, actualTestCases);
@@ -354,9 +350,9 @@ namespace DymeExpansion.Core.Tests
     {
       var configLibrary = GetMockConfigsLibrary();
       var mainConfig = configLibrary.Single(c => c.Name == "TestConfig");
-      var compiledNodeTree = TestCaseLoader.NodeTreeFromConfigs(mainConfig, configLibrary);
+      var compiledNodeTree = new TestCaseLoader().NodeTreeFromConfigs(mainConfig, configLibrary);
       var expectedTestCases = ResultTestCasesForAllMocks().Select(tc => CaseToString(tc)).OrderBy(s => s).ToList();
-      var actualTestCases = TestCaseLoader.CasesFromNodeTree(compiledNodeTree).Select(tc => CaseToString(tc)).OrderBy(s => s).ToList();
+      var actualTestCases = new TestCaseLoader().CasesFromNodeTree(compiledNodeTree).Select(tc => CaseToString(tc)).OrderBy(s => s).ToList();
       //File.WriteAllText(Directory.GetCurrentDirectory() + "\\ExpectedCases.xls", expectedTestCases.Aggregate((a,b) => $"{a}\n{b}"));
       //File.WriteAllText(Directory.GetCurrentDirectory() + "\\ActualCases.xls", actualTestCases.Aggregate((a,b) => $"{a}\n{b}"));
       CollectionAssert.AreEquivalent(expectedTestCases, actualTestCases);
@@ -383,11 +379,11 @@ namespace DymeExpansion.Core.Tests
       };
 
       // Act...
-      var nodeTree = TestCaseLoader.NodeTreeFromConfigs(config, configLibrary);
-      var testCases = TestCaseLoader.CasesFromNodeTree(nodeTree);
+      var nodeTree = new TestCaseLoader().NodeTreeFromConfigs(config, configLibrary);
+      var testCases = new TestCaseLoader().CasesFromNodeTree(nodeTree);
 
       // Assert...
-      var testCaseString = testCases.Select(tc => TestCaseLoader.CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
       Assert.AreEqual(expectedCases, testCaseString);
     }
 
@@ -407,10 +403,10 @@ namespace DymeExpansion.Core.Tests
       };
 
       // Act...
-      var testCases = TestCaseLoader.CasesFromConfigs(config, configLibrary);
+      var testCases = new TestCaseLoader().CasesFromConfigs(config, configLibrary);
 
       // Assert...
-      var testCaseString = testCases.Select(tc => TestCaseLoader.CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
       Assert.AreEqual(expectedCases, testCaseString);
     }
 
@@ -433,10 +429,10 @@ namespace DymeExpansion.Core.Tests
       };
 
       // Act...
-      var testCases = TestCaseLoader.CasesFromConfigs(config, configLibrary);
+      var testCases = new TestCaseLoader().CasesFromConfigs(config, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => TestCaseLoader.CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
       Assert.AreEqual(4, testCases.Count());
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
@@ -457,10 +453,10 @@ namespace DymeExpansion.Core.Tests
       };
 
       // Act...
-      var testCases = TestCaseLoader.CasesFromConfigs(config, configLibrary);
+      var testCases = new TestCaseLoader().CasesFromConfigs(config, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => TestCaseLoader.CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
       Assert.AreEqual(2, testCases.Count());
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
@@ -483,10 +479,10 @@ namespace DymeExpansion.Core.Tests
       };
 
       // Act...
-      var testCases = TestCaseLoader.CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => TestCaseLoader.CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 
@@ -510,10 +506,10 @@ namespace DymeExpansion.Core.Tests
       };
 
       // Act...
-      var testCases = TestCaseLoader.CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => TestCaseLoader.CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 
@@ -540,10 +536,10 @@ namespace DymeExpansion.Core.Tests
       };
 
       // Act...
-      var testCases = TestCaseLoader.CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => TestCaseLoader.CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 
@@ -567,10 +563,10 @@ namespace DymeExpansion.Core.Tests
       };
 
       // Act...
-      var testCases = TestCaseLoader.CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => TestCaseLoader.CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 
@@ -602,10 +598,10 @@ namespace DymeExpansion.Core.Tests
       };
 
       // Act...
-      var testCases = TestCaseLoader.CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => TestCaseLoader.CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
 
     }
@@ -633,10 +629,10 @@ namespace DymeExpansion.Core.Tests
       };
 
       // Act...
-      var testCases = TestCaseLoader.CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => TestCaseLoader.CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 
@@ -664,10 +660,10 @@ namespace DymeExpansion.Core.Tests
       };
 
       // Act...
-      var testCases = TestCaseLoader.CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => TestCaseLoader.CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 
@@ -695,10 +691,10 @@ namespace DymeExpansion.Core.Tests
       };
 
       // Act...
-      var testCases = TestCaseLoader.CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => TestCaseLoader.CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 
@@ -726,10 +722,10 @@ namespace DymeExpansion.Core.Tests
       };
 
       // Act...
-      var testCases = TestCaseLoader.CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => TestCaseLoader.CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 
@@ -755,10 +751,10 @@ namespace DymeExpansion.Core.Tests
       };
 
       // Act...
-      var testCases = TestCaseLoader.CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => TestCaseLoader.CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 

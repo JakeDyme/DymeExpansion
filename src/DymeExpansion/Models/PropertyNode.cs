@@ -1,7 +1,7 @@
 ﻿using System.Linq;
-using DymeExpansion.Enums;
+using DymeExpansion.Core.Enums;
 
-namespace DymeExpansion.Models
+namespace DymeExpansion.Core.Models
 {
   public class PropertyNode : Node
   {

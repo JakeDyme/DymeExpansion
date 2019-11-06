@@ -8,3 +8,4 @@ REM publish packages
 set "_currentPath=%~dp0"
 set "_deployPath=%_currentPath%deploy"
 call "%_deployPath%\PublishAll.bat"
+pause

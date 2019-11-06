@@ -2,12 +2,28 @@
 using System.Diagnostics;
 using System.Linq;
 
-namespace DymeExpansion.Models
+namespace DymeExpansion.Core.Models
 {
   [DebuggerDisplay("{Hash()}")]
   public class Case
   {
     public IEnumerable<CaseProperty> Properties { get;set; } = new List<CaseProperty>();
+
+    public string Property(string propertyName)
+    {
+      return Properties.Single(p => p.Name == propertyName).Value;
+    }
+
+    public string this[string propertyName]
+    {
+      get { return Properties.Single(p => p.Name == propertyName).Value; }
+      set { Properties.Single(p => p.Name == propertyName).Value = value; }
+    }
+
+    public string PropertyOrDefault(string propertyName)
+    {
+      return Properties.SingleOrDefault(p => p.Name == propertyName)?.Value;
+    }
 
     public string Hash() {
       return Properties
@@ -15,5 +31,7 @@ namespace DymeExpansion.Models
         .Select(s => s.Hash())
         .Aggregate((a,b) => $"{a}|{b}");
     }
+
+
   }
 }

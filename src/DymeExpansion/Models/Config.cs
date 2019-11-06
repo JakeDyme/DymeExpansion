@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace DymeExpansion.Models
+namespace DymeExpansion.Core.Models
 {
 
   public class Config

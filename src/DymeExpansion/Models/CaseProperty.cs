@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
-using DymeExpansion.Enums;
+using DymeExpansion.Core.Enums;
 
-namespace DymeExpansion.Models
+namespace DymeExpansion.Core.Models
 {
   [DebuggerDisplay("{Name}:{Value}")]
   public class CaseProperty

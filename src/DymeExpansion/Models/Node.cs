@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using DymeExpansion.Enums;
-using DymeExpansion.Interfaces;
+using DymeExpansion.Core.Enums;
+using DymeExpansion.Core.Interfaces;
 
-namespace DymeExpansion.Models
+namespace DymeExpansion.Core.Models
 {
   [DebuggerDisplay("{Value}")]
   public class Node : INode

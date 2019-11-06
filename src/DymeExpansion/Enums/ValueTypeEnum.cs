@@ -1,5 +1,5 @@
 ﻿
-namespace DymeExpansion.Enums
+namespace DymeExpansion.Core.Enums
 {
   public enum ValueTypeEnum {
     Irrelevant,

@@ -1,5 +1,5 @@
 ﻿
-namespace DymeExpansion.Interfaces
+namespace DymeExpansion.Core.Interfaces
 {
   public interface INode
   {
