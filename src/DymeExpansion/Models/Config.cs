@@ -32,5 +32,13 @@ namespace DymeExpansion.Core.Models
       return this;
     }
 
+    public ConfigProperty AddProperty(string name)
+    {
+      var newProperty = new ConfigProperty();
+      newProperty.Name = name;
+      Properties.Add(newProperty);
+      return newProperty;
+    }
+
   }
 }

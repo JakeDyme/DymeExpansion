@@ -1,7 +1,7 @@
 ﻿
 namespace DymeExpansion.Core.Enums
 {
-  public enum ValueTypeEnum {
+  internal enum ValueTypeEnum {
     Irrelevant,
     ImportedSetup,
     Text

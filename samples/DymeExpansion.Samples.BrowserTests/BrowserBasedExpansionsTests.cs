@@ -30,7 +30,7 @@ namespace DymeExpansion.Samples.BrowserTests
       // Act...
       SaveScreenshot("BasicDriverTest", "google");
       // Assert...
-      var expectedFileLocation = @$"{Directory.GetCurrentDirectory()}\{_outputFolder}\BasicDriverTest\google.png";
+      var expectedFileLocation = $"{Directory.GetCurrentDirectory()}\\{_outputFolder}\\BasicDriverTest\\google.png";
       Assert.IsTrue(File.Exists(expectedFileLocation));
     }
 
@@ -111,8 +111,8 @@ namespace DymeExpansion.Samples.BrowserTests
 
     private void SaveScreenshot(string groupName, string fileName)
     {
-      var directoryPath = @$"{Directory.GetCurrentDirectory()}\{_outputFolder}\{groupName}";
-      var filePath = @$"{directoryPath}\{fileName}.png";
+      var directoryPath = $"{Directory.GetCurrentDirectory()}\\{_outputFolder}\\{groupName}";
+      var filePath = $"{directoryPath}\\{fileName}.png";
       Screenshot ss = ((ITakesScreenshot)_driver).GetScreenshot();
       if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
       ss.SaveAsFile(filePath, ScreenshotImageFormat.Png);
@@ -121,7 +121,7 @@ namespace DymeExpansion.Samples.BrowserTests
     // In this variation I've realized that Devices all use the same device farm to run on, so instead of specifying the device farm details in the top level config, 
     // I'm simply going to embed the device farm details into all the devices.
     // I've also noticed that the site data is consistent and can be bundled into one config.
-    // The only thing to note is that I need to correlate "Domain" and "Url", since 
+    // The only thing to note is that I need to correlate "Domain" and "Url"
     [Test]
     public void CasesFromConfigs_GivenInheritingDeviceSetups_ExpectTestCase()
     {

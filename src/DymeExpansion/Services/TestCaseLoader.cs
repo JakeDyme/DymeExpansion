@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DymeExpansion.Core.Enums;
@@ -10,10 +8,22 @@ namespace DymeExpansion.Core.Services
 {
   public class TestCaseLoader
   {
+    private string _regexMatchForSpecialPropertyConfigName;
     private string _regexMatchForSpecialPropertyConfigReference = "IMPORT\\..*|^IMPORT";
-    private string _regexMatchForSpecialPropertyConfigName = "IMPORT\\..*|^IMPORT";
 
-    public TestCaseLoader() { }
+    public static IEnumerable<Case> CasesFromConfig(Config config, IEnumerable<Config> configLibrary)
+    {
+      var testCaseLoader = new TestCaseLoader();
+      return testCaseLoader.CasesFromConfigs(config, configLibrary);
+    }
+
+    public static IEnumerable<Case> CasesFromConfig(Config config)
+    {
+      var testCaseLoader = new TestCaseLoader();
+      return testCaseLoader.CasesFromConfigs(config);
+    }
+
+    public TestCaseLoader() {}
 
     public TestCaseLoader(string configReferencePropertyName = null, string configNamePrefix = null) {
       _regexMatchForSpecialPropertyConfigReference = configReferencePropertyName;
@@ -26,28 +36,19 @@ namespace DymeExpansion.Core.Services
       _regexMatchForSpecialPropertyConfigName = options.PrefixForConfigReference;
     }
 
-    public IEnumerable<Case> CasesFromConfigs(Config config, List<Config> configLibrary) { 
-      var nodeTree = NodeTreeFromConfigs(config, configLibrary);
+    public IEnumerable<Case> CasesFromConfigs(Config config)
+    {
+      var configLibrary = new List<Config>() { config };
+      var parsedConfigLibrary = configLibrary.Select(ParseConfig);
+      var nodeTree = NodeTreeFromConfigs(ParseConfig(config), parsedConfigLibrary);
       var cases = CasesFromNodeTree(nodeTree);
       return cases;
     }
 
-    public Node NodeTreeFromConfigs(Config config, List<Config> configLibrary) { 
-      var configNodeTree = new Node(config.Name, NodeTypeEnum.ValueNode);
-      configNodeTree.Children = PropertyNodesFromConfig(config, configLibrary).Select(n => n as Node).ToList();
-      return configNodeTree;
-    }
-
-    public IEnumerable<PropertyNode> PropertyNodesFromConfig(Config parentConfig, IEnumerable<Config> configLibrary) { 
-      
-      var propertyNodes = new List<PropertyNode>();
-      foreach (var prop in parentConfig.Properties)
-      {
-        var newPropertyNode = new PropertyNode(prop.Name, NodeTypeEnum.PropertyNode, prop.CorrelationId);
-        newPropertyNode.Children = LeafNodesFromConfigProperty(configLibrary, prop).Select(n => n as Node).ToList();
-        propertyNodes.Add(newPropertyNode);
-      }
-      return propertyNodes;
+    public IEnumerable<Case> CasesFromConfigs(Config config, IEnumerable<Config> configLibrary) { 
+      var nodeTree = NodeTreeFromConfigs(config, configLibrary);
+      var cases = CasesFromNodeTree(nodeTree);
+      return cases;
     }
 
     public string CasesToString(IEnumerable<Case> cases, string caseSeparator = "\n", string propertySeparator = " ")
@@ -65,7 +66,35 @@ namespace DymeExpansion.Core.Services
       return caseX.Properties.OrderBy(i => i.Name).Select(s => s.Value).Aggregate((a, b) => $"{a}{propertySeparator}{b}");
     }
 
-    public IEnumerable<Case> CasesFromNodeTree(Node forNode, Node parent = null)
+    private Config ParseConfig(Config config)
+    {
+      if (_regexMatchForSpecialPropertyConfigName == null) return config;      
+      Regex match = new Regex(_regexMatchForSpecialPropertyConfigName);
+      var leafNodes = new List<ValueNode>();
+      var configNameProp = config.Properties.Single(p => match.IsMatch(p.Name));
+      var otherProps = config.Properties.Where(p => !match.IsMatch(p.Name));
+      return new Config(configNameProp.Name, otherProps);
+    }
+
+    internal Node NodeTreeFromConfigs(Config config, IEnumerable<Config> configLibrary) { 
+      var configNodeTree = new Node(config.Name, NodeTypeEnum.ValueNode);
+      configNodeTree.Children = PropertyNodesFromConfig(config, configLibrary).Select(n => n as Node).ToList();
+      return configNodeTree;
+    }
+
+    internal IEnumerable<PropertyNode> PropertyNodesFromConfig(Config parentConfig, IEnumerable<Config> configLibrary) { 
+      
+      var propertyNodes = new List<PropertyNode>();
+      foreach (var prop in parentConfig.Properties)
+      {
+        var newPropertyNode = new PropertyNode(prop.Name, NodeTypeEnum.PropertyNode, prop.CorrelationId);
+        newPropertyNode.Children = LeafNodesFromConfigProperty(configLibrary, prop).Select(n => n as Node).ToList();
+        propertyNodes.Add(newPropertyNode);
+      }
+      return propertyNodes;
+    }
+
+    internal IEnumerable<Case> CasesFromNodeTree(Node forNode, Node parent = null)
     {
       if (forNode.Children.Count == 0)
       {

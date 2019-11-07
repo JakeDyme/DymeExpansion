@@ -2,17 +2,20 @@
 <package >
   <metadata>
     <id>DymeExpansion</id>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <authors>Jake Dyme</authors>
     <owners>Jake Dyme</owners>
 	<license type="file">LICENSE.txt</license>
     <projectUrl>https://github.com/JakeDyme/DymeExpansion</projectUrl>
     <icon>bushbaby.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Allows you to make configs that will be expanded into test cases</description>
-    <releaseNotes>Initial release</releaseNotes>
+    <description>
+      Allows you to make configs that will be expanded into test cases
+      1.1.0 - Dotnet Core 2.2
+    </description>
+    <releaseNotes>For dotnet Core 2.2</releaseNotes>
     <copyright>Copyright 2019</copyright>
-    <tags>Fluent Dyme Expansion Configuration Automation Tests</tags>
+    <tags>Dyme Expansion Configuration Automation Tests</tags>
     <dependencies>
     </dependencies>
   </metadata>

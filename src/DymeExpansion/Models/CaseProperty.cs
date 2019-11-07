@@ -8,7 +8,7 @@ namespace DymeExpansion.Core.Models
   {
     public string Name { get;set;}
     public string Value { get; set; }
-    public ExpansionTypeEnum ExpansionType { get; set; } = ExpansionTypeEnum.expansive;
+    internal ExpansionTypeEnum ExpansionType { get; set; } = ExpansionTypeEnum.expansive;
     public string CorrelationId { get; set; }
     public CaseProperty() { }
     

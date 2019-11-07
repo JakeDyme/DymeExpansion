@@ -1,7 +1,7 @@
 ﻿
 namespace DymeExpansion.Core.Interfaces
 {
-  public interface INode
+  internal interface INode
   {
   }
 }

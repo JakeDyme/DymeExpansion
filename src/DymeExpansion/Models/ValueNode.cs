@@ -3,7 +3,7 @@ using DymeExpansion.Core.Enums;
 
 namespace DymeExpansion.Core.Models
 {
-  public class ValueNode : Node
+  internal class ValueNode : Node
   {
     public ValueNode(string value, NodeTypeEnum nodeType, Node parent = null) : 
       base(value, nodeType, parent, null){}

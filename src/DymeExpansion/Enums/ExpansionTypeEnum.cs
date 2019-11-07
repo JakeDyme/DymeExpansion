@@ -1,7 +1,7 @@
 ﻿
 namespace DymeExpansion.Core.Enums
 {
-  public enum ExpansionTypeEnum
+  internal enum ExpansionTypeEnum
   {
     expansive,
     pool

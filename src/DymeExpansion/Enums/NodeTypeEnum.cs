@@ -1,7 +1,7 @@
 ﻿
 namespace DymeExpansion.Core.Enums
 {
-  public enum NodeTypeEnum {
+  internal enum NodeTypeEnum {
     PropertyNode,
     ValueNode
   }

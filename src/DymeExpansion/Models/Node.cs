@@ -8,7 +8,7 @@ using DymeExpansion.Core.Interfaces;
 namespace DymeExpansion.Core.Models
 {
   [DebuggerDisplay("{Value}")]
-  public class Node : INode
+  internal class Node : INode
   {
     public string Value { get;set;}
     public ValueTypeEnum LeafType {get;set; } = ValueTypeEnum.Irrelevant;
