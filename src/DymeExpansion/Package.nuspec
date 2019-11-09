@@ -5,11 +5,10 @@
     <version>1.1.0</version>
     <authors>Jake Dyme</authors>
     <description>
-      Allows you to make configs that will be expanded into test cases
-      1.1.1 - Dotnet Core 2.2
+      Allows you to make configs that will be expanded into test cases.
     </description>
     <owners>Jake Dyme</owners>
-	  <license type="file">LICENSE.txt</license>
+	<license type="file">LICENSE.txt</license>
     <projectUrl>https://github.com/JakeDyme/DymeExpansion</projectUrl>
     <icon>bushbaby.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -20,10 +19,8 @@
     </dependencies>
     <repository type="git" url="https://github.com/NuGet/NuGet.Client.git" branch="master" />
     <frameworkAssemblies>
-      <frameworkAssembly assemblyName="DymeExpansion.Core" targetFramework="netcore2.2" />
+      <frameworkAssembly assemblyName="DymeExpansion.Core" targetFramework="netcoreapp2.2" />
+	  <frameworkAssembly assemblyName="DymeExpansion.Core" targetFramework="netcoreapp3.0" />
     </frameworkAssemblies>  
   </metadata>
-  <files>
-    <file src="bushbaby.png" target=""/>
-  </files>
 </package>
