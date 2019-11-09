@@ -22,7 +22,7 @@ namespace DymeExpansion.Samples.BrowserTests
 
         DymeConfig.New("User")
           .AddProperty("IMPORT", "Application")
-          .AddProperty("user", new[]{"alice","bob","cathy","dave","eve","frank" }),
+          .AddProperty("user", new[]{"alice","bob","cathy","dave","eve","frank","grant","harry", "ivan" }),
 
         DymeConfig.New("Vehicle")
           .AddProperty("IMPORT", "User")
@@ -30,7 +30,7 @@ namespace DymeExpansion.Samples.BrowserTests
           .AddProperty("year", new[]{"2012", "2013", "2014","2015", "2016" } )
           .AddProperty("condition", new[]{"new", "used" })
           .AddProperty("type", new[]{"convertible", "suv", "4x4", "hatchback", "sudan" })
-          .AddProperty("feature", new[]{"airbags", "seat_warmer", "backwiper" })
+          .AddProperty("feature", new[]{"airbags", "electric_windows", "seat_warmer", "adjustable_steering", "backwiper" })
       };
       var topLevelConfig = configLibrary.Single(c => c.Name == "Vehicle");
 
