@@ -5,7 +5,7 @@ namespace DymeExpansion.Core.Models
 {
   internal class PropertyNode : Node
   {
-    public PropertyNode(string name, NodeTypeEnum nodeType, string correlationId = null, Node parent = null) : base(name, nodeType, parent, correlationId){}
+    public PropertyNode(string name, NodeTypeEnum nodeType, string correlationKey = null, Node parent = null) : base(name, nodeType, parent, correlationKey){}
     
 
     public ValueNode WithImported(string name)

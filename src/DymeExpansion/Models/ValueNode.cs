@@ -8,10 +8,10 @@ namespace DymeExpansion.Core.Models
     public ValueNode(string value, NodeTypeEnum nodeType, Node parent = null) : 
       base(value, nodeType, parent, null){}
     
-    public PropertyNode WithProperty(string propertyName, string correlationId = null) { 
+    public PropertyNode WithProperty(string propertyName, string correlationKey = null) { 
       var property =  Children.FirstOrDefault(n => n.Value == propertyName);
       if (property != null) return property as PropertyNode;
-      var newPropertyNode = new PropertyNode(propertyName, NodeTypeEnum.PropertyNode, correlationId, this);
+      var newPropertyNode = new PropertyNode(propertyName, NodeTypeEnum.PropertyNode, correlationKey, this);
       newPropertyNode.LeafType = ValueTypeEnum.Irrelevant;
       Children.Add(newPropertyNode);
       return newPropertyNode;

@@ -13,15 +13,15 @@ namespace DymeExpansion.Core.Models
     public string Value { get;set;}
     public ValueTypeEnum LeafType {get;set; } = ValueTypeEnum.Irrelevant;
     public NodeTypeEnum NodeType { get;set;}
-    public string CorrelationId { get;set; }
+    public string CorrelationKey { get;set; }
     public List<Node> Children { get;set;} = new List<Node>();
     internal Node Parent { get;set; }
     
-    public Node( string name, NodeTypeEnum nodeType, Node parent = null, string correlationId = null) { 
+    public Node( string name, NodeTypeEnum nodeType, Node parent = null, string correlationKey = null) { 
       Value = name;
       NodeType = nodeType;
       Parent = parent;
-      CorrelationId = correlationId ?? Guid.NewGuid().ToString();
+      CorrelationKey = correlationKey ?? Guid.NewGuid().ToString();
     }
 
     public string HashAsExpression(Node parent = null)

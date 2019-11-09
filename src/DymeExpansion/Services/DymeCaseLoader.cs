@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DymeExpansion.Core.Enums;
@@ -6,101 +7,102 @@ using DymeExpansion.Core.Models;
 
 namespace DymeExpansion.Core.Services
 {
-  public class TestCaseLoader
+  public class DymeCaseLoader
   {
     private string _regexMatchForSpecialPropertyConfigName;
     private string _regexMatchForSpecialPropertyConfigReference = "IMPORT\\..*|^IMPORT";
 
-    public static IEnumerable<Case> CasesFromConfig(Config config, IEnumerable<Config> configLibrary)
+    public static IEnumerable<DymeCase> CasesFromConfig(DymeConfig config, IEnumerable<DymeConfig> configLibrary)
     {
-      var testCaseLoader = new TestCaseLoader();
+      var testCaseLoader = new DymeCaseLoader();
       return testCaseLoader.CasesFromConfigs(config, configLibrary);
     }
 
-    public static IEnumerable<Case> CasesFromConfig(Config config)
+    public static IEnumerable<DymeCase> CasesFromConfig(DymeConfig config)
     {
-      var testCaseLoader = new TestCaseLoader();
+      var testCaseLoader = new DymeCaseLoader();
       return testCaseLoader.CasesFromConfigs(config);
     }
 
-    public TestCaseLoader() {}
+    public DymeCaseLoader() {}
 
-    public TestCaseLoader(string configReferencePropertyName = null, string configNamePrefix = null) {
+    public DymeCaseLoader(string configReferencePropertyName = null, string configNamePrefix = null) {
       _regexMatchForSpecialPropertyConfigReference = configReferencePropertyName;
       _regexMatchForSpecialPropertyConfigName = configNamePrefix;
     }
 
-    public TestCaseLoader(CaseLoaderOptions options)
+    public DymeCaseLoader(DymeCaseLoaderOptions options)
     {
       _regexMatchForSpecialPropertyConfigReference = options.PrefixForConfigName;
       _regexMatchForSpecialPropertyConfigName = options.PrefixForConfigReference;
     }
 
-    public IEnumerable<Case> CasesFromConfigs(Config config)
+    public IEnumerable<DymeCase> CasesFromConfigs(DymeConfig config)
     {
-      var configLibrary = new List<Config>() { config };
+      var configLibrary = new List<DymeConfig>() { config };
       var parsedConfigLibrary = configLibrary.Select(ParseConfig);
       var nodeTree = NodeTreeFromConfigs(ParseConfig(config), parsedConfigLibrary);
       var cases = CasesFromNodeTree(nodeTree);
       return cases;
     }
 
-    public IEnumerable<Case> CasesFromConfigs(Config config, IEnumerable<Config> configLibrary) { 
+    public IEnumerable<DymeCase> CasesFromConfigs(DymeConfig config, IEnumerable<DymeConfig> configLibrary) { 
       var nodeTree = NodeTreeFromConfigs(config, configLibrary);
       var cases = CasesFromNodeTree(nodeTree);
       return cases;
     }
 
-    public string CasesToString(IEnumerable<Case> cases, string caseSeparator = "\n", string propertySeparator = " ")
+    public string CasesToString(IEnumerable<DymeCase> cases, string caseSeparator = "\n", string propertySeparator = " ")
     {
       return cases.Select(c => CaseToString(c, propertySeparator)).Aggregate((a, b) => $"{a}{caseSeparator}{b}");
     }
 
-    public string CaseToString(Case caseX, string propertySeparator = " ")
+    public string CaseToString(DymeCase caseX, string propertySeparator = " ")
     {
       return caseX.Properties.OrderBy(i => i.Name).Select(s => $"p:{s.Name}({s.Value})").Aggregate((a, b) => $"{a}{propertySeparator}{b}");
     }
 
-    public string CaseToGrid(Case caseX, string propertySeparator = "\t")
+    public string CaseToGrid(DymeCase caseX, string propertySeparator = "\t")
     {
       return caseX.Properties.OrderBy(i => i.Name).Select(s => s.Value).Aggregate((a, b) => $"{a}{propertySeparator}{b}");
     }
 
-    private Config ParseConfig(Config config)
+    private DymeConfig ParseConfig(DymeConfig config)
     {
       if (_regexMatchForSpecialPropertyConfigName == null) return config;      
       Regex match = new Regex(_regexMatchForSpecialPropertyConfigName);
       var leafNodes = new List<ValueNode>();
-      var configNameProp = config.Properties.Single(p => match.IsMatch(p.Name));
+      var configNameProp = config.Properties.SingleOrDefault(p => match.IsMatch(p.Name));
+      if (configNameProp == null) throw new Exception($"Your config is missing a mandatory property \"{_regexMatchForSpecialPropertyConfigName}\"");
       var otherProps = config.Properties.Where(p => !match.IsMatch(p.Name));
-      return new Config(configNameProp.Name, otherProps);
+      return new DymeConfig(configNameProp.Name, otherProps);
     }
 
-    internal Node NodeTreeFromConfigs(Config config, IEnumerable<Config> configLibrary) { 
+    internal Node NodeTreeFromConfigs(DymeConfig config, IEnumerable<DymeConfig> configLibrary) { 
       var configNodeTree = new Node(config.Name, NodeTypeEnum.ValueNode);
       configNodeTree.Children = PropertyNodesFromConfig(config, configLibrary).Select(n => n as Node).ToList();
       return configNodeTree;
     }
 
-    internal IEnumerable<PropertyNode> PropertyNodesFromConfig(Config parentConfig, IEnumerable<Config> configLibrary) { 
+    internal IEnumerable<PropertyNode> PropertyNodesFromConfig(DymeConfig parentConfig, IEnumerable<DymeConfig> configLibrary) { 
       
       var propertyNodes = new List<PropertyNode>();
       foreach (var prop in parentConfig.Properties)
       {
-        var newPropertyNode = new PropertyNode(prop.Name, NodeTypeEnum.PropertyNode, prop.CorrelationId);
+        var newPropertyNode = new PropertyNode(prop.Name, NodeTypeEnum.PropertyNode, prop.CorrelationKey);
         newPropertyNode.Children = LeafNodesFromConfigProperty(configLibrary, prop).Select(n => n as Node).ToList();
         propertyNodes.Add(newPropertyNode);
       }
       return propertyNodes;
     }
 
-    internal IEnumerable<Case> CasesFromNodeTree(Node forNode, Node parent = null)
+    internal IEnumerable<DymeCase> CasesFromNodeTree(Node forNode, Node parent = null)
     {
       if (forNode.Children.Count == 0)
       {
-        var newCase = new Case();
-        newCase.Properties = newCase.Properties.Append(new CaseProperty(parent.Value, forNode.Value));
-        return new List<Case>() { newCase };
+        var newCase = new DymeCase();
+        newCase.Properties = newCase.Properties.Append(new DymeCaseProperty(parent.Value, forNode.Value));
+        return new List<DymeCase>() { newCase };
       }
 
       if (forNode.NodeType == NodeTypeEnum.PropertyNode)
@@ -121,7 +123,7 @@ namespace DymeExpansion.Core.Services
       {
         /// Because its a leaf, the child cases will overlay eachother. (be multiplied, or aggregated)
         var mergedCasesByCorrelationGroup = forNode.Children
-          .GroupBy(n => n.CorrelationId)
+          .GroupBy(n => n.CorrelationKey)
           .Select(correlationGroup => correlationGroup
             .Select(node => CasesFromNodeTree(node, forNode))
             .Aggregate((caseSet1, caseSet2) => MergeCorrelatedCases(caseSet1, caseSet2)))
@@ -139,10 +141,10 @@ namespace DymeExpansion.Core.Services
         return distinctCases;
       }
 
-      throw new System.Exception("Should never reach here");
+      throw new Exception("Unknown NodeType");
     }
 
-    private IEnumerable<ValueNode> LeafNodesFromConfigProperty(IEnumerable<Config> configLibrary, ConfigProperty configProperty)
+    private IEnumerable<ValueNode> LeafNodesFromConfigProperty(IEnumerable<DymeConfig> configLibrary, DymeConfigProperty configProperty)
     {
       Regex match = new Regex(_regexMatchForSpecialPropertyConfigReference);
       var leafNodes = new List<ValueNode>();
@@ -153,7 +155,8 @@ namespace DymeExpansion.Core.Services
         if (match.IsMatch(configProperty.Name))
         {
           leafNode.LeafType = ValueTypeEnum.ImportedSetup;
-          var matchingLibraryConfig = configLibrary.Single(c => c.Name == value);
+          var matchingLibraryConfig = configLibrary.SingleOrDefault(c => c.Name == value);
+          if (matchingLibraryConfig == null) throw new Exception($"You are attempting to reference a config \"{value}\", which does not exist in your config library");
           leafNode.Children = PropertyNodesFromConfig(matchingLibraryConfig, configLibrary).Select(n => n as Node).ToList();
         }
         leafNodes.Add(leafNode);
@@ -161,9 +164,9 @@ namespace DymeExpansion.Core.Services
       return leafNodes;
     }
 
-    private IEnumerable<Case> MergeCorrelatedCases(IEnumerable<Case> caseSet1, IEnumerable<Case> caseSet2)
+    private IEnumerable<DymeCase> MergeCorrelatedCases(IEnumerable<DymeCase> caseSet1, IEnumerable<DymeCase> caseSet2)
     {
-      var finalLeafNodeSet = new List<Case>();
+      var finalLeafNodeSet = new List<DymeCase>();
       var caseSet1L = caseSet1.ToList();
       var caseSet2L = caseSet2.ToList();
       for (var caseIndex = 0; caseIndex < caseSet1L.Count(); caseIndex++)
@@ -174,9 +177,9 @@ namespace DymeExpansion.Core.Services
       return finalLeafNodeSet;
     }
 
-    private IEnumerable<Case> MergeCaseSets(IEnumerable<Case> caseSet1, IEnumerable<Case> caseSet2)
+    private IEnumerable<DymeCase> MergeCaseSets(IEnumerable<DymeCase> caseSet1, IEnumerable<DymeCase> caseSet2)
     {
-      var finalLeafNodeSet = new List<Case>();
+      var finalLeafNodeSet = new List<DymeCase>();
       /// Expansion happens here, this nested foreach creates a cartesian product of properties over test cases...
       foreach (var leafNode1 in caseSet1)
       {
@@ -190,12 +193,12 @@ namespace DymeExpansion.Core.Services
       return finalLeafNodeSet;
     }
 
-    private Case OverlayCases(Case baseCase, Case overlayCase)
+    private DymeCase OverlayCases(DymeCase baseCase, DymeCase overlayCase)
     {
-      var newPropertySet = new List<CaseProperty>();
+      var newPropertySet = new List<DymeCaseProperty>();
       newPropertySet.AddRange(overlayCase.Properties.ToList());
       newPropertySet.AddRange(baseCase.Properties.Where(bc => !overlayCase.Properties.Any(op => op.Name == bc.Name)));
-      return new Case(){Properties = newPropertySet };
+      return new DymeCase(){Properties = newPropertySet };
     }
 
   }

@@ -5,9 +5,9 @@ using System.Linq;
 namespace DymeExpansion.Core.Models
 {
   [DebuggerDisplay("{Hash()}")]
-  public class Case
+  public class DymeCase
   {
-    public IEnumerable<CaseProperty> Properties { get;set; } = new List<CaseProperty>();
+    public IEnumerable<DymeCaseProperty> Properties { get;set; } = new List<DymeCaseProperty>();
 
     public string Property(string propertyName)
     {

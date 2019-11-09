@@ -11,279 +11,279 @@ namespace DymeExpansion.Core.Tests
   internal class TestCaseLoader_Tests
   {
 
-    public List<Config> GetMockConfigsLibrary()
+    public List<DymeConfig> GetMockConfigsLibrary()
     {
-      return new List<Config>()
+      return new List<DymeConfig>()
       {
-        new Config()
+        new DymeConfig()
         {
           Name = "TestConfig",
-          Properties = new List<ConfigProperty>(){
-            new ConfigProperty("IMPORT.Devices",new[]{"IPhoneX-Setup", "SamusungS7-Setup" }),
-            new ConfigProperty("IMPORT.SiteInfo",new[]{"SearchSites-Setup", "SocialSites-Setup" })
+          Properties = new List<DymeConfigProperty>(){
+            new DymeConfigProperty("IMPORT.Devices",new[]{"IPhoneX-Setup", "SamusungS7-Setup" }),
+            new DymeConfigProperty("IMPORT.SiteInfo",new[]{"SearchSites-Setup", "SocialSites-Setup" })
           }
         },
 
-        new Config
+        new DymeConfig
         {
           Name = "IPhoneX-Setup",
-          Properties = new List<ConfigProperty>(){
-            new ConfigProperty("IMPORT.Accounts","TeamAccount-Setup"),
-            new ConfigProperty("Platform", "Ios")
+          Properties = new List<DymeConfigProperty>(){
+            new DymeConfigProperty("IMPORT.Accounts","TeamAccount-Setup"),
+            new DymeConfigProperty("Platform", "Ios")
           }
         },
 
-        new Config
+        new DymeConfig
         {
           Name = "SamusungS7-Setup",
-          Properties = new List<ConfigProperty>(){
-            new ConfigProperty("IMPORT", "JakesAccount-Setup"),
-            new ConfigProperty("Platform",new[]{"Android"})
+          Properties = new List<DymeConfigProperty>(){
+            new DymeConfigProperty("IMPORT", "JakesAccount-Setup"),
+            new DymeConfigProperty("Platform",new[]{"Android"})
           }
         },
 
-        new Config
+        new DymeConfig
         {
           Name = "TeamAccount-Setup",
-          Properties = new List<ConfigProperty>(){
-            new ConfigProperty("Username",new[]{"Tom", "Bob" }),
-            new ConfigProperty("SeleniumHub","Saucelabs")
+          Properties = new List<DymeConfigProperty>(){
+            new DymeConfigProperty("Username",new[]{"Tom", "Bob" }),
+            new DymeConfigProperty("SeleniumHub","Saucelabs")
           }
         },
 
-        new Config
+        new DymeConfig
         {
           Name = "JakesAccount-Setup",
-          Properties = new List<ConfigProperty>(){
-            new ConfigProperty("Username", "Jake"),
-            new ConfigProperty("SeleniumHub", "LocalFarm")
+          Properties = new List<DymeConfigProperty>(){
+            new DymeConfigProperty("Username", "Jake"),
+            new DymeConfigProperty("SeleniumHub", "LocalFarm")
           },
         },
 
-        new Config
+        new DymeConfig
         {
           Name = "SearchSites-Setup",
-          Properties = new List<ConfigProperty>(){
-            new ConfigProperty("SiteName", "google"),
-            new ConfigProperty("Sid","23")
+          Properties = new List<DymeConfigProperty>(){
+            new DymeConfigProperty("SiteName", "google"),
+            new DymeConfigProperty("Sid","23")
           }
         },
 
-        new Config
+        new DymeConfig
         {
           Name = "SocialSites-Setup",
-          Properties = new List<ConfigProperty>(){
-            new ConfigProperty("SiteName",new[]{"facebook", "twitter" }),
-            new ConfigProperty("Sid",new[]{"41", "42", "43" })
+          Properties = new List<DymeConfigProperty>(){
+            new DymeConfigProperty("SiteName",new[]{"facebook", "twitter" }),
+            new DymeConfigProperty("Sid",new[]{"41", "42", "43" })
           }
         }
 
       };
     }
 
-    private string CaseToString(Case caseX, string separator = ",")
+    private string CaseToString(DymeCase caseX, string separator = ",")
     {
       return caseX.Properties.OrderBy(i => i.Name).Select(s => s.Value).Aggregate((a, b) => $"{a}{separator}{b}");
     }
 
-    private IEnumerable<Case> ResultTestCasesForAllMocks()
+    private IEnumerable<DymeCase> ResultTestCasesForAllMocks()
     {
-      return new List<Case>{
-        new Case(){
-          Properties = new List<CaseProperty>()
+      return new List<DymeCase>{
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Tom"),
-            new CaseProperty("SeleniumHub","Saucelabs"),
-            new CaseProperty("Platform","Ios"),
-            new CaseProperty("SiteName","google"),
-            new CaseProperty("Sid","23")
+            new DymeCaseProperty("Username","Tom"),
+            new DymeCaseProperty("SeleniumHub","Saucelabs"),
+            new DymeCaseProperty("Platform","Ios"),
+            new DymeCaseProperty("SiteName","google"),
+            new DymeCaseProperty("Sid","23")
           }
         },
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Tom"),
-            new CaseProperty("SeleniumHub","Saucelabs"),
-            new CaseProperty("Platform","Ios"),
-            new CaseProperty("SiteName","facebook"),
-            new CaseProperty("Sid","41"),
+            new DymeCaseProperty("Username","Tom"),
+            new DymeCaseProperty("SeleniumHub","Saucelabs"),
+            new DymeCaseProperty("Platform","Ios"),
+            new DymeCaseProperty("SiteName","facebook"),
+            new DymeCaseProperty("Sid","41"),
           },
         },
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Tom"),
-          new CaseProperty("SeleniumHub","Saucelabs"),
-          new CaseProperty("Platform","Ios"),
-          new CaseProperty("SiteName","facebook"),
-          new CaseProperty("Sid","42"),
+            new DymeCaseProperty("Username","Tom"),
+          new DymeCaseProperty("SeleniumHub","Saucelabs"),
+          new DymeCaseProperty("Platform","Ios"),
+          new DymeCaseProperty("SiteName","facebook"),
+          new DymeCaseProperty("Sid","42"),
         },
         },
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Tom"),
-          new CaseProperty("SeleniumHub","Saucelabs"),
-          new CaseProperty("Platform","Ios"),
-          new CaseProperty("SiteName","facebook"),
-          new CaseProperty("Sid","43"),
+            new DymeCaseProperty("Username","Tom"),
+          new DymeCaseProperty("SeleniumHub","Saucelabs"),
+          new DymeCaseProperty("Platform","Ios"),
+          new DymeCaseProperty("SiteName","facebook"),
+          new DymeCaseProperty("Sid","43"),
           },
         },
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Tom"),
-            new CaseProperty("SeleniumHub","Saucelabs"),
-            new CaseProperty("Platform","Ios"),
-            new CaseProperty("SiteName","twitter"),
-            new CaseProperty("Sid","41"),
+            new DymeCaseProperty("Username","Tom"),
+            new DymeCaseProperty("SeleniumHub","Saucelabs"),
+            new DymeCaseProperty("Platform","Ios"),
+            new DymeCaseProperty("SiteName","twitter"),
+            new DymeCaseProperty("Sid","41"),
           },
         },
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Tom"),
-          new CaseProperty("SeleniumHub","Saucelabs"),
-          new CaseProperty("Platform","Ios"),
-          new CaseProperty("SiteName","twitter"),
-          new CaseProperty("Sid","42"),
+            new DymeCaseProperty("Username","Tom"),
+          new DymeCaseProperty("SeleniumHub","Saucelabs"),
+          new DymeCaseProperty("Platform","Ios"),
+          new DymeCaseProperty("SiteName","twitter"),
+          new DymeCaseProperty("Sid","42"),
         },},
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Tom"),
-          new CaseProperty("SeleniumHub","Saucelabs"),
-          new CaseProperty("Platform","Ios"),
-          new CaseProperty("SiteName","twitter"),
-          new CaseProperty("Sid","43"),
+            new DymeCaseProperty("Username","Tom"),
+          new DymeCaseProperty("SeleniumHub","Saucelabs"),
+          new DymeCaseProperty("Platform","Ios"),
+          new DymeCaseProperty("SiteName","twitter"),
+          new DymeCaseProperty("Sid","43"),
         },},
 
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Bob"),
-          new CaseProperty("SeleniumHub","Saucelabs"),
-          new CaseProperty("Platform","Ios"),
-          new CaseProperty("SiteName","google"),
-          new CaseProperty("Sid","23"),
+            new DymeCaseProperty("Username","Bob"),
+          new DymeCaseProperty("SeleniumHub","Saucelabs"),
+          new DymeCaseProperty("Platform","Ios"),
+          new DymeCaseProperty("SiteName","google"),
+          new DymeCaseProperty("Sid","23"),
         },  },
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Bob"),
-          new CaseProperty("SeleniumHub","Saucelabs"),
-          new CaseProperty("Platform","Ios"),
-          new CaseProperty("SiteName","facebook"),
-          new CaseProperty("Sid","41"),
+            new DymeCaseProperty("Username","Bob"),
+          new DymeCaseProperty("SeleniumHub","Saucelabs"),
+          new DymeCaseProperty("Platform","Ios"),
+          new DymeCaseProperty("SiteName","facebook"),
+          new DymeCaseProperty("Sid","41"),
         },},
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Bob"),
-          new CaseProperty("SeleniumHub","Saucelabs"),
-          new CaseProperty("Platform","Ios"),
-          new CaseProperty("SiteName","facebook"),
-          new CaseProperty("Sid","42"),
+            new DymeCaseProperty("Username","Bob"),
+          new DymeCaseProperty("SeleniumHub","Saucelabs"),
+          new DymeCaseProperty("Platform","Ios"),
+          new DymeCaseProperty("SiteName","facebook"),
+          new DymeCaseProperty("Sid","42"),
         },},
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Bob"),
-          new CaseProperty("SeleniumHub","Saucelabs"),
-          new CaseProperty("Platform","Ios"),
-          new CaseProperty("SiteName","facebook"),
-          new CaseProperty("Sid","43"),
+            new DymeCaseProperty("Username","Bob"),
+          new DymeCaseProperty("SeleniumHub","Saucelabs"),
+          new DymeCaseProperty("Platform","Ios"),
+          new DymeCaseProperty("SiteName","facebook"),
+          new DymeCaseProperty("Sid","43"),
         }, },
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Bob"),
-          new CaseProperty("SeleniumHub","Saucelabs"),
-          new CaseProperty("Platform","Ios"),
-          new CaseProperty("SiteName","twitter"),
-          new CaseProperty("Sid","41"),
+            new DymeCaseProperty("Username","Bob"),
+          new DymeCaseProperty("SeleniumHub","Saucelabs"),
+          new DymeCaseProperty("Platform","Ios"),
+          new DymeCaseProperty("SiteName","twitter"),
+          new DymeCaseProperty("Sid","41"),
         },},
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Bob"),
-          new CaseProperty("SeleniumHub","Saucelabs"),
-          new CaseProperty("Platform","Ios"),
-          new CaseProperty("SiteName","twitter"),
-          new CaseProperty("Sid","42"),
+            new DymeCaseProperty("Username","Bob"),
+          new DymeCaseProperty("SeleniumHub","Saucelabs"),
+          new DymeCaseProperty("Platform","Ios"),
+          new DymeCaseProperty("SiteName","twitter"),
+          new DymeCaseProperty("Sid","42"),
         },},
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Bob"),
-          new CaseProperty("SeleniumHub","Saucelabs"),
-          new CaseProperty("Platform","Ios"),
-          new CaseProperty("SiteName","twitter"),
-          new CaseProperty("Sid","43"),
+            new DymeCaseProperty("Username","Bob"),
+          new DymeCaseProperty("SeleniumHub","Saucelabs"),
+          new DymeCaseProperty("Platform","Ios"),
+          new DymeCaseProperty("SiteName","twitter"),
+          new DymeCaseProperty("Sid","43"),
         },},
 
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Jake"),
-          new CaseProperty("SeleniumHub","LocalFarm"),
-          new CaseProperty("Platform","Android"),
-          new CaseProperty("SiteName","google"),
-          new CaseProperty("Sid","23"),
+            new DymeCaseProperty("Username","Jake"),
+          new DymeCaseProperty("SeleniumHub","LocalFarm"),
+          new DymeCaseProperty("Platform","Android"),
+          new DymeCaseProperty("SiteName","google"),
+          new DymeCaseProperty("Sid","23"),
         }, },
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Jake"),
-          new CaseProperty("SeleniumHub","LocalFarm"),
-          new CaseProperty("Platform","Android"),
-          new CaseProperty("SiteName","facebook"),
-          new CaseProperty("Sid","41"),
+            new DymeCaseProperty("Username","Jake"),
+          new DymeCaseProperty("SeleniumHub","LocalFarm"),
+          new DymeCaseProperty("Platform","Android"),
+          new DymeCaseProperty("SiteName","facebook"),
+          new DymeCaseProperty("Sid","41"),
         },},
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Jake"),
-          new CaseProperty("SeleniumHub","LocalFarm"),
-          new CaseProperty("Platform","Android"),
-          new CaseProperty("SiteName","facebook"),
-          new CaseProperty("Sid","42"),
+            new DymeCaseProperty("Username","Jake"),
+          new DymeCaseProperty("SeleniumHub","LocalFarm"),
+          new DymeCaseProperty("Platform","Android"),
+          new DymeCaseProperty("SiteName","facebook"),
+          new DymeCaseProperty("Sid","42"),
         },},
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Jake"),
-          new CaseProperty("SeleniumHub","LocalFarm"),
-          new CaseProperty("Platform","Android"),
-          new CaseProperty("SiteName","facebook"),
-          new CaseProperty("Sid","43"),
+            new DymeCaseProperty("Username","Jake"),
+          new DymeCaseProperty("SeleniumHub","LocalFarm"),
+          new DymeCaseProperty("Platform","Android"),
+          new DymeCaseProperty("SiteName","facebook"),
+          new DymeCaseProperty("Sid","43"),
         },   },
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Jake"),
-          new CaseProperty("SeleniumHub","LocalFarm"),
-          new CaseProperty("Platform","Android"),
-          new CaseProperty("SiteName","twitter"),
-          new CaseProperty("Sid","41"),
+            new DymeCaseProperty("Username","Jake"),
+          new DymeCaseProperty("SeleniumHub","LocalFarm"),
+          new DymeCaseProperty("Platform","Android"),
+          new DymeCaseProperty("SiteName","twitter"),
+          new DymeCaseProperty("Sid","41"),
         },},
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Jake"),
-          new CaseProperty("SeleniumHub","LocalFarm"),
-          new CaseProperty("Platform","Android"),
-          new CaseProperty("SiteName","twitter"),
-          new CaseProperty("Sid","42"),
+            new DymeCaseProperty("Username","Jake"),
+          new DymeCaseProperty("SeleniumHub","LocalFarm"),
+          new DymeCaseProperty("Platform","Android"),
+          new DymeCaseProperty("SiteName","twitter"),
+          new DymeCaseProperty("Sid","42"),
         },},
-        new Case(){
-          Properties = new List<CaseProperty>()
+        new DymeCase(){
+          Properties = new List<DymeCaseProperty>()
           {
-            new CaseProperty("Username","Jake"),
-          new CaseProperty("SeleniumHub","LocalFarm"),
-          new CaseProperty("Platform","Android"),
-          new CaseProperty("SiteName","twitter"),
-          new CaseProperty("Sid","43"),
+            new DymeCaseProperty("Username","Jake"),
+          new DymeCaseProperty("SeleniumHub","LocalFarm"),
+          new DymeCaseProperty("Platform","Android"),
+          new DymeCaseProperty("SiteName","twitter"),
+          new DymeCaseProperty("Sid","43"),
         }},
       };
     }
@@ -321,8 +321,8 @@ namespace DymeExpansion.Core.Tests
     public void ExpandSetup_GivenPermutationSet_Expect1Permutation()
     {
       // Arrange...
-      var configLibrary = new List<Config>();
-      var config = Config.New("TestConfig")
+      var configLibrary = new List<DymeConfig>();
+      var config = DymeConfig.New("TestConfig")
         .AddProperty("a", "1")
         .AddProperty("b", "1")
         .AddProperty("c", "1");
@@ -331,11 +331,11 @@ namespace DymeExpansion.Core.Tests
       };
 
       // Act...
-      var nodeTree = new TestCaseLoader().NodeTreeFromConfigs(config, configLibrary);
-      var testCases = new TestCaseLoader().CasesFromNodeTree(nodeTree);
+      var nodeTree = new DymeCaseLoader().NodeTreeFromConfigs(config, configLibrary);
+      var testCases = new DymeCaseLoader().CasesFromNodeTree(nodeTree);
 
       // Assert...
-      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
       Assert.AreEqual(expectedCases, testCaseString);
     }
 
@@ -363,7 +363,7 @@ namespace DymeExpansion.Core.Tests
     {
       var mockNodeTree = GetMockNodeTreeUsingFluentTreeBuilder();
       var expectedTestCases = ResultTestCasesForAllMocks().Select(tc => CaseToString(tc)).OrderBy(s => s).ToList();
-      var actualTestCases = new TestCaseLoader().CasesFromNodeTree(mockNodeTree).Select(tc => CaseToString(tc)).OrderBy(s => s).ToList();
+      var actualTestCases = new DymeCaseLoader().CasesFromNodeTree(mockNodeTree).Select(tc => CaseToString(tc)).OrderBy(s => s).ToList();
       //File.WriteAllText(Directory.GetCurrentDirectory() + "\\ExpectedCases.xls", expectedTestCases.Aggregate((a,b) => $"{a}\n{b}"));
       //File.WriteAllText(Directory.GetCurrentDirectory() + "\\ActualCases.xls", actualTestCases.Aggregate((a,b) => $"{a}\n{b}"));
       CollectionAssert.AreEquivalent(expectedTestCases, actualTestCases);
@@ -374,9 +374,9 @@ namespace DymeExpansion.Core.Tests
     {
       var configLibrary = GetMockConfigsLibrary();
       var mainConfig = configLibrary.Single(c => c.Name == "TestConfig");
-      var compiledNodeTree = new TestCaseLoader().NodeTreeFromConfigs(mainConfig, configLibrary);
+      var compiledNodeTree = new DymeCaseLoader().NodeTreeFromConfigs(mainConfig, configLibrary);
       var expectedTestCases = ResultTestCasesForAllMocks().Select(tc => CaseToString(tc)).OrderBy(s => s).ToList();
-      var actualTestCases = new TestCaseLoader().CasesFromNodeTree(compiledNodeTree).Select(tc => CaseToString(tc)).OrderBy(s => s).ToList();
+      var actualTestCases = new DymeCaseLoader().CasesFromNodeTree(compiledNodeTree).Select(tc => CaseToString(tc)).OrderBy(s => s).ToList();
       //File.WriteAllText(Directory.GetCurrentDirectory() + "\\ExpectedCases.xls", expectedTestCases.Aggregate((a,b) => $"{a}\n{b}"));
       //File.WriteAllText(Directory.GetCurrentDirectory() + "\\ActualCases.xls", actualTestCases.Aggregate((a,b) => $"{a}\n{b}"));
       CollectionAssert.AreEquivalent(expectedTestCases, actualTestCases);

@@ -4,18 +4,18 @@ using DymeExpansion.Core.Enums;
 namespace DymeExpansion.Core.Models
 {
   [DebuggerDisplay("{Name}:{Value}")]
-  public class CaseProperty
+  public class DymeCaseProperty
   {
     public string Name { get;set;}
     public string Value { get; set; }
     internal ExpansionTypeEnum ExpansionType { get; set; } = ExpansionTypeEnum.expansive;
-    public string CorrelationId { get; set; }
-    public CaseProperty() { }
+    public string CorrelationKey { get; set; }
+    public DymeCaseProperty() { }
     
-    public CaseProperty(string name,  string value, string correlationId = null){
+    public DymeCaseProperty(string name,  string value, string correlationKey = null){
       Name = name;
       Value = value;
-      CorrelationId = correlationId;
+      CorrelationKey = correlationKey;
     }
 
     public string Hash()

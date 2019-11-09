@@ -39,14 +39,14 @@ namespace DymeExpansion.Samples.BrowserTests
     {
 
       // Arrange...
-      var configLibrary = new List<Config> {
+      var configLibrary = new List<DymeConfig> {
 
-      Config.New("DeviceFarm")
+      DymeConfig.New("DeviceFarm")
         .AddProperty("Selenium.Hub.Url", "http://SuperStack/hub")
         .AddProperty("API.Key", "1234")
         .AddProperty("Username", "JakeDyme"),
 
-      Config.New("IPhone8")
+      DymeConfig.New("IPhone8")
         .AddProperty("Capability: appiumVersion", "1.13.0")
         .AddProperty("Capability: deviceName", "iPhone 8 Simulator")
         .AddProperty("Capability: deviceOrientation", "portrait")
@@ -54,7 +54,7 @@ namespace DymeExpansion.Samples.BrowserTests
         .AddProperty("Capability: platformName", "iOS")
         .AddProperty("Capability: browserName", "Safari"),
 
-      Config.New("Android")
+      DymeConfig.New("Android")
         .AddProperty("Capability: appiumVersion", "1.9.0")
         .AddProperty("Capability: deviceName", "Android Emulator")
         .AddProperty("Capability: deviceOrientation", "portrait")
@@ -62,34 +62,34 @@ namespace DymeExpansion.Samples.BrowserTests
         .AddProperty("Capability: platformName", "Android")
         .AddProperty("Capability: browserName", "Chrome"),
 
-      Config.New("Windows10Desktop")
+      DymeConfig.New("Windows10Desktop")
         .AddProperty("Capability: browserVersion", "54.0")
         .AddProperty("Capability: platformName", "Windows 10")
         .AddProperty("Capability: browserName", "firefox"),
 
-      Config.New("Google")
+      DymeConfig.New("Google")
         .AddProperty("Domain", "google")
         .AddProperty("Url", "http://www.google.com/search?p=")
         .AddProperty("Criteria", "laptop"),
 
-      Config.New("Ebay")
+      DymeConfig.New("Ebay")
         .AddProperty("Domain", "ebay")
         .AddProperty("Url", "http://www.ebay.com/sch/")
         .AddProperty("Criteria", "xbox"),
 
-      Config.New("Amazon")
+      DymeConfig.New("Amazon")
         .AddProperty("Domain", "amazon")
         .AddProperty("Url", "https://www.amazon.com/")
         .AddProperty("Criteria", "playstation")
       };
 
-      var testConfig = Config.New("TestConfig")
+      var testConfig = DymeConfig.New("TestConfig")
         .AddProperty("IMPORT.DeviceFarms", "DeviceFarm")
         .AddProperty("IMPORT.Devices", new[] { "IPhone8", "Android", "Windows10Desktop" })
         .AddProperty("IMPORT.Sites", new[] { "Google", "Ebay", "Amazon" });
 
       // Create an instance of the test case loader, and tell it what properties are reference properties "using".
-      var sut = new TestCaseLoader();
+      var sut = new DymeCaseLoader();
 
       // Act, Generate test cases from the configs...
       var testCases = sut.CasesFromConfigs(testConfig, configLibrary);
@@ -126,15 +126,15 @@ namespace DymeExpansion.Samples.BrowserTests
     public void CasesFromConfigs_GivenInheritingDeviceSetups_ExpectTestCase()
     {
       // Arrange...
-      var sut = new TestCaseLoader();
-      var configLibrary = new List<Config> {
+      var sut = new DymeCaseLoader();
+      var configLibrary = new List<DymeConfig> {
 
-        Config.New("DeviceFarm")
+        DymeConfig.New("DeviceFarm")
           .AddProperty("Selenium.Hub.Url", "http://SuperStack/hub")
           .AddProperty("API.Key", "1234")
           .AddProperty("Username", "JakeDyme"),
 
-        Config.New("IPhone8")
+        DymeConfig.New("IPhone8")
           .AddProperty("IMPORT.DeviceFarms", "DeviceFarm")
           .AddProperty("Capability: appiumVersion", "1.13.0")
           .AddProperty("Capability: deviceName", "iPhone 8 Simulator")
@@ -143,7 +143,7 @@ namespace DymeExpansion.Samples.BrowserTests
           .AddProperty("Capability: platformName", "iOS")
           .AddProperty("Capability: browserName", "Safari"),
 
-        Config.New("Android")
+        DymeConfig.New("Android")
           .AddProperty("IMPORT.DeviceFarms", "DeviceFarm")
           .AddProperty("Capability: appiumVersion", "1.9.0")
           .AddProperty("Capability: deviceName", "Android Emulator")
@@ -152,19 +152,19 @@ namespace DymeExpansion.Samples.BrowserTests
           .AddProperty("Capability: platformName", "Android")
           .AddProperty("Capability: browserName", "Chrome"),
 
-        Config.New("Windows10Desktop")
+        DymeConfig.New("Windows10Desktop")
           .AddProperty("IMPORT.DeviceFarms", "DeviceFarm")
           .AddProperty("Capability: browserVersion", "54.0")
           .AddProperty("Capability: platformName", "Windows 10")
           .AddProperty("Capability: browserName", "firefox"),
 
-        Config.New("Sites")
+        DymeConfig.New("Sites")
           .AddProperty("Domain", new []{ "google", "ebay", "amazon" }, "urls&domains" )
           .AddProperty("Url", new[]{"https://www.google.com/search?p=", "http://www.ebay.com/sch/", "https://www.amazon.com/" }, "urls&domains")
           .AddProperty("Criteria", new[]{"laptop", "playstation" })
       };
 
-      var testConfig = Config.New("TestConfig")
+      var testConfig = DymeConfig.New("TestConfig")
         .AddProperty("IMPORT.Devices", new[] { "IPhone8", "Android", "Windows10Desktop" })
         .AddProperty("IMPORT.Sites", "Sites");
 

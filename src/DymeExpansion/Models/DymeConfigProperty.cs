@@ -5,34 +5,34 @@ using DymeExpansion.Core.Enums;
 namespace DymeExpansion.Core.Models
 {
 
-  public class ConfigProperty
+  public class DymeConfigProperty
   {
     public string Name { get;set;}
     public IEnumerable<string> Values { get; set; }
     internal ExpansionTypeEnum ExpansionType { get; set; } = ExpansionTypeEnum.expansive;
-    public string CorrelationId { get; set; }
-    public ConfigProperty() { }
+    public string CorrelationKey { get; set; }
+    public DymeConfigProperty() { }
 
-    public ConfigProperty(string name,  string value, string correlationId = null){
+    public DymeConfigProperty(string name,  string value, string correlationKey = null){
       Name = name;
       Values = new[] { value };
-      CorrelationId = correlationId;
+      CorrelationKey = correlationKey;
     }
 
-    public ConfigProperty(string name,  string[] values, string correlationId = null){
+    public DymeConfigProperty(string name,  string[] values, string correlationKey = null){
       Name = name;
       Values = values;
-      CorrelationId = correlationId;
+      CorrelationKey = correlationKey;
     }
 
-    public ConfigProperty WithValue(string value)
+    public DymeConfigProperty WithValue(string value)
     {
       if (Values == null) Values = new List<string>();
       Values.Append(value);
       return this;
     }
 
-    public ConfigProperty And(string value)
+    public DymeConfigProperty And(string value)
     {
       return WithValue(value);
     }

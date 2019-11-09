@@ -4,16 +4,16 @@ using System.Collections.Generic;
 
 namespace DymeExpansion.Core.Tests.Models
 {
-  public class Case_Tests
+  public class DymeCase_Tests
   {
     [Test]
     public void Property_GivenPropertyName_ExpectPropertyValue()
     {
       // Arrange...
-      var sut = new Case();
-      sut.Properties = new List<CaseProperty>()
+      var sut = new DymeCase();
+      sut.Properties = new List<DymeCaseProperty>()
       {
-        new CaseProperty("Name", "Bob")
+        new DymeCaseProperty("Name", "Bob")
       };
       // Act...
       var result = sut.Property("Name");
@@ -25,10 +25,10 @@ namespace DymeExpansion.Core.Tests.Models
     public void SquareBrackets_GivenPropertyName_ExpectPropertyValue()
     {
       // Arrange...
-      var sut = new Case();
-      sut.Properties = new List<CaseProperty>()
+      var sut = new DymeCase();
+      sut.Properties = new List<DymeCaseProperty>()
       {
-        new CaseProperty("Name", "Bob")
+        new DymeCaseProperty("Name", "Bob")
       };
       // Act...
       var result = sut["Name"];
@@ -40,10 +40,10 @@ namespace DymeExpansion.Core.Tests.Models
     public void PropertyOrDefault_GivenNonExistentPropertyName_ExpectNull()
     {
       // Arrange...
-      var sut = new Case();
-      sut.Properties = new List<CaseProperty>()
+      var sut = new DymeCase();
+      sut.Properties = new List<DymeCaseProperty>()
       {
-        new CaseProperty("Name", "Bob")
+        new DymeCaseProperty("Name", "Bob")
       };
       // Act...
       var result = sut.PropertyOrDefault("SomeOtherField");

@@ -7,87 +7,87 @@ using System.Linq;
 
 namespace DymeExpansion.Core.Tests.Services
 {
-  public class TestCaseLoader_Tests
+  public class DymeCaseLoader_Tests
   {
 
-    public List<Config> GetMockConfigsLibrary()
+    public List<DymeConfig> GetMockConfigsLibrary()
     {
-      return new List<Config>()
+      return new List<DymeConfig>()
       {
-        new Config()
+        new DymeConfig()
         {
           Name = "TestConfig",
-          Properties = new List<ConfigProperty>(){
-            new ConfigProperty("IMPORT.Devices",new[]{"IPhoneX-Setup", "SamusungS7-Setup" }),
-            new ConfigProperty("IMPORT.SiteInfo",new[]{"SearchSites-Setup", "SocialSites-Setup" })
+          Properties = new List<DymeConfigProperty>(){
+            new DymeConfigProperty("IMPORT.Devices",new[]{"IPhoneX-Setup", "SamusungS7-Setup" }),
+            new DymeConfigProperty("IMPORT.SiteInfo",new[]{"SearchSites-Setup", "SocialSites-Setup" })
           }
         },
 
-        new Config
+        new DymeConfig
         {
           Name = "IPhoneX-Setup",
-          Properties = new List<ConfigProperty>(){
-            new ConfigProperty("IMPORT.Accounts","TeamAccount-Setup"),
-            new ConfigProperty("Platform", "Ios")
+          Properties = new List<DymeConfigProperty>(){
+            new DymeConfigProperty("IMPORT.Accounts","TeamAccount-Setup"),
+            new DymeConfigProperty("Platform", "Ios")
           }
         },
 
-        new Config
+        new DymeConfig
         {
           Name = "SamusungS7-Setup",
-          Properties = new List<ConfigProperty>(){
-            new ConfigProperty("IMPORT", "JakesAccount-Setup"),
-            new ConfigProperty("Platform",new[]{"Android"})
+          Properties = new List<DymeConfigProperty>(){
+            new DymeConfigProperty("IMPORT", "JakesAccount-Setup"),
+            new DymeConfigProperty("Platform",new[]{"Android"})
           }
         },
 
-        new Config
+        new DymeConfig
         {
           Name = "TeamAccount-Setup",
-          Properties = new List<ConfigProperty>(){
-            new ConfigProperty("Username",new[]{"Tom", "Bob" }),
-            new ConfigProperty("SeleniumHub","Saucelabs")
+          Properties = new List<DymeConfigProperty>(){
+            new DymeConfigProperty("Username",new[]{"Tom", "Bob" }),
+            new DymeConfigProperty("SeleniumHub","Saucelabs")
           }
         },
 
-        new Config
+        new DymeConfig
         {
           Name = "JakesAccount-Setup",
-          Properties = new List<ConfigProperty>(){
-            new ConfigProperty("Username", "Jake"),
-            new ConfigProperty("SeleniumHub", "LocalFarm")
+          Properties = new List<DymeConfigProperty>(){
+            new DymeConfigProperty("Username", "Jake"),
+            new DymeConfigProperty("SeleniumHub", "LocalFarm")
           },
         },
 
-        new Config
+        new DymeConfig
         {
           Name = "SearchSites-Setup",
-          Properties = new List<ConfigProperty>(){
-            new ConfigProperty("SiteName", "google"),
-            new ConfigProperty("Sid","23")
+          Properties = new List<DymeConfigProperty>(){
+            new DymeConfigProperty("SiteName", "google"),
+            new DymeConfigProperty("Sid","23")
           }
         },
 
-        new Config
+        new DymeConfig
         {
           Name = "SocialSites-Setup",
-          Properties = new List<ConfigProperty>(){
-            new ConfigProperty("SiteName",new[]{"facebook", "twitter" }),
-            new ConfigProperty("Sid",new[]{"41", "42", "43" })
+          Properties = new List<DymeConfigProperty>(){
+            new DymeConfigProperty("SiteName",new[]{"facebook", "twitter" }),
+            new DymeConfigProperty("Sid",new[]{"41", "42", "43" })
           }
         }
 
       };
     }
 
-    private string CaseToString(Case caseX, string separator = ",")
+    private string CaseToString(DymeCase caseX, string separator = ",")
     {
       return caseX.Properties.OrderBy(i => i.Name).Select(s => s.Value).Aggregate((a, b) => $"{a}{separator}{b}");
     }
 
     public void GetCaseSet_GivenSimpleConfig()
     {
-      var y = Config.New("TestConfig")
+      var y = DymeConfig.New("TestConfig")
         .AddProperty("IMPORT.Devices", new[] { "IPhoneX-Setup", "SamusungS7-Setup" });
     }
 
@@ -96,8 +96,8 @@ namespace DymeExpansion.Core.Tests.Services
     {
 
       // Arrange...
-      var configLibrary = new List<Config>();
-      var config = Config.New("TestConfig")
+      var configLibrary = new List<DymeConfig>();
+      var config = DymeConfig.New("TestConfig")
         .AddProperty("a", new[] { "1", "2" })
         .AddProperty("b", "1")
         .AddProperty("c", "1");
@@ -107,10 +107,10 @@ namespace DymeExpansion.Core.Tests.Services
       };
 
       // Act...
-      var testCases = new TestCaseLoader().CasesFromConfigs(config, configLibrary);
+      var testCases = new DymeCaseLoader().CasesFromConfigs(config, configLibrary);
 
       // Assert...
-      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
       Assert.AreEqual(expectedCases, testCaseString);
     }
 
@@ -119,8 +119,8 @@ namespace DymeExpansion.Core.Tests.Services
     {
 
       // Arrange...
-      var configLibrary = new List<Config>();
-      var config = Config.New("TestConfig")
+      var configLibrary = new List<DymeConfig>();
+      var config = DymeConfig.New("TestConfig")
         .AddProperty("a", new[] { "1", "2" })
         .AddProperty("b", new[] { "1", "2" })
         .AddProperty("c", "1");
@@ -133,10 +133,10 @@ namespace DymeExpansion.Core.Tests.Services
       };
 
       // Act...
-      var testCases = new TestCaseLoader().CasesFromConfigs(config, configLibrary);
+      var testCases = new DymeCaseLoader().CasesFromConfigs(config, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
       Assert.AreEqual(4, testCases.Count());
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
@@ -145,8 +145,8 @@ namespace DymeExpansion.Core.Tests.Services
     public void ExpandSetup_GivenPermutationSet_Expect2CorrelatedPermutations()
     {
       // Arrange...
-      var configLibrary = new List<Config>();
-      var config = Config.New("TestConfig")
+      var configLibrary = new List<DymeConfig>();
+      var config = DymeConfig.New("TestConfig")
         .AddProperty("a", new[] { "1", "2" }, "1")
         .AddProperty("b", new[] { "1", "2" }, "1")
         .AddProperty("c", "1", "2");
@@ -157,10 +157,10 @@ namespace DymeExpansion.Core.Tests.Services
       };
 
       // Act...
-      var testCases = new TestCaseLoader().CasesFromConfigs(config, configLibrary);
+      var testCases = new DymeCaseLoader().CasesFromConfigs(config, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
       Assert.AreEqual(2, testCases.Count());
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
@@ -169,12 +169,12 @@ namespace DymeExpansion.Core.Tests.Services
     public void ResolveSetup()
     {
       // Arrange...
-      var configLibrary = new List<Config>(){
-        Config.New("D[1]")
+      var configLibrary = new List<DymeConfig>(){
+        DymeConfig.New("D[1]")
           .AddProperty("a", "1")
       };
 
-      var testConfig = Config.New("TestConfig")
+      var testConfig = DymeConfig.New("TestConfig")
         .AddProperty("IMPORT.DefaultSetup", "D[1]")
         .AddProperty("b", "1");
 
@@ -183,10 +183,10 @@ namespace DymeExpansion.Core.Tests.Services
       };
 
       // Act...
-      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new DymeCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 
@@ -195,13 +195,13 @@ namespace DymeExpansion.Core.Tests.Services
     public void ResolveSetup_2DefaultProperties()
     {
       // Arrange...
-      var configLibrary = new List<Config>(){
-        Config.New("D[1]")
+      var configLibrary = new List<DymeConfig>(){
+        DymeConfig.New("D[1]")
           .AddProperty("a", "1")
           .AddProperty("c", "1")
       };
 
-      var testConfig = Config.New("TestConfig")
+      var testConfig = DymeConfig.New("TestConfig")
         .AddProperty("IMPORT.DefaultSetup", "D[1]")
         .AddProperty("b", "1");
 
@@ -210,10 +210,10 @@ namespace DymeExpansion.Core.Tests.Services
       };
 
       // Act...
-      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new DymeCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 
@@ -221,16 +221,16 @@ namespace DymeExpansion.Core.Tests.Services
     public void ResolveSetup_1ExpandedDefaultSetup()
     {
       // Arrange...
-      var configLibrary = new List<Config>(){
-        Config.New("D[1]")
+      var configLibrary = new List<DymeConfig>(){
+        DymeConfig.New("D[1]")
           .AddProperty("a", "1")
           .AddProperty("c", "1"),
-        Config.New("D[2]")
+        DymeConfig.New("D[2]")
           .AddProperty("m", "1")
           .AddProperty("n", "1")
       };
 
-      var testConfig = Config.New("TestConfig")
+      var testConfig = DymeConfig.New("TestConfig")
         .AddProperty("IMPORT.DefaultSetup", new[] { "D[1]", "D[2]" })
         .AddProperty("b", "1");
 
@@ -240,10 +240,10 @@ namespace DymeExpansion.Core.Tests.Services
       };
 
       // Act...
-      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new DymeCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 
@@ -251,13 +251,13 @@ namespace DymeExpansion.Core.Tests.Services
     public void ResolveSetup_1DefaultExpandedProperty()
     {
       // Arrange...
-      var configLibrary = new List<Config>(){
-        Config.New("D[1]")
+      var configLibrary = new List<DymeConfig>(){
+        DymeConfig.New("D[1]")
           .AddProperty("a", new[]{ "1", "2"})
           .AddProperty("c", "1"),
       };
 
-      var testConfig = Config.New("TestConfig")
+      var testConfig = DymeConfig.New("TestConfig")
         .AddProperty("IMPORT.DefaultSetup", "D[1]")
         .AddProperty("b", "1");
 
@@ -267,10 +267,10 @@ namespace DymeExpansion.Core.Tests.Services
       };
 
       // Act...
-      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new DymeCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 
@@ -279,14 +279,14 @@ namespace DymeExpansion.Core.Tests.Services
     public void ResolveSetup_1ExpandedDefaultSetupsEachWith2ExpandedProperties()
     {
       // Arrange...
-      var configLibrary = new List<Config>(){
-        Config.New("D[1]")
+      var configLibrary = new List<DymeConfig>(){
+        DymeConfig.New("D[1]")
           .AddProperty("a", new[]{ "T", "F" }),
-        Config.New("D[2]")
+        DymeConfig.New("D[2]")
           .AddProperty("b", new[]{ "T", "F"})
       };
 
-      var testConfig = Config.New("TestConfig")
+      var testConfig = DymeConfig.New("TestConfig")
         .AddProperty("IMPORT.DefaultSetup", new[] { "D[1]", "D[2]" })
         .AddProperty("c", new[] { "T", "F" });
 
@@ -302,10 +302,10 @@ namespace DymeExpansion.Core.Tests.Services
       };
 
       // Act...
-      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new DymeCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
 
     }
@@ -314,16 +314,16 @@ namespace DymeExpansion.Core.Tests.Services
     public void ResolveSetup_2DefaultSetups()
     {
       // Arrange...
-      var configLibrary = new List<Config>(){
-        Config.New("D[1]")
+      var configLibrary = new List<DymeConfig>(){
+        DymeConfig.New("D[1]")
           .AddProperty("a", "1")
           .AddProperty("b", "1"),
-        Config.New("D[2]")
+        DymeConfig.New("D[2]")
           .AddProperty("a", "2")
           .AddProperty("c", "1")
       };
 
-      var testConfig = Config.New("TestConfig")
+      var testConfig = DymeConfig.New("TestConfig")
         .AddProperty("IMPORT.DefaultSetup", new[] { "D[1]" })
         .AddProperty("IMPORT.DefaultSetup2", new[] { "D[2]" })
         .AddProperty("d", "1");
@@ -333,10 +333,10 @@ namespace DymeExpansion.Core.Tests.Services
       };
 
       // Act...
-      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new DymeCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 
@@ -344,16 +344,16 @@ namespace DymeExpansion.Core.Tests.Services
     public void ResolveSetup_2DefaultSetupsWithExpandedProperties()
     {
       // Arrange...
-      var configLibrary = new List<Config>(){
-        Config.New("D[1]")
+      var configLibrary = new List<DymeConfig>(){
+        DymeConfig.New("D[1]")
           .AddProperty("a", new[]{ "1", "2", "3" })
           .AddProperty("b", "1"),
-        Config.New("D[2]")
+        DymeConfig.New("D[2]")
           .AddProperty("a", new[]{ "4", "5" })
           .AddProperty("c", "1")
       };
 
-      var testConfig = Config.New("TestConfig")
+      var testConfig = DymeConfig.New("TestConfig")
         .AddProperty("IMPORT.DefaultSetup", new[] { "D[1]" })
         .AddProperty("IMPORT.DefaultSetup2", new[] { "D[2]" })
         .AddProperty("d", "1");
@@ -364,10 +364,10 @@ namespace DymeExpansion.Core.Tests.Services
       };
 
       // Act...
-      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new DymeCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 
@@ -376,17 +376,17 @@ namespace DymeExpansion.Core.Tests.Services
     public void ResolveSetup_3DefaultSetups2LevelsDeep()
     {
       // Arrange...
-      var configLibrary = new List<Config>(){
-        Config.New("D[1]")
+      var configLibrary = new List<DymeConfig>(){
+        DymeConfig.New("D[1]")
           .AddProperty("a", "1"),
-        Config.New("D[2]")
+        DymeConfig.New("D[2]")
           .AddProperty("a", "2"),
-        Config.New("D[3]")
+        DymeConfig.New("D[3]")
           .AddProperty("IMPORT.DefaultSetup", "D[2]")
           .AddProperty("a", "3")
       };
 
-      var testConfig = Config.New("TestConfig")
+      var testConfig = DymeConfig.New("TestConfig")
         .AddProperty("IMPORT.DefaultSetup", "D[1]")
         .AddProperty("IMPORT.DefaultSetup2", "D[3]");
 
@@ -395,10 +395,10 @@ namespace DymeExpansion.Core.Tests.Services
       };
 
       // Act...
-      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new DymeCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 
@@ -407,16 +407,16 @@ namespace DymeExpansion.Core.Tests.Services
     public void ResolveSetup_3DefaultSetups2LevelsDeepWithExpansions()
     {
       // Arrange...
-      var configLibrary = new List<Config>(){
-        Config.New("D[1]")
+      var configLibrary = new List<DymeConfig>(){
+        DymeConfig.New("D[1]")
           .AddProperty("a", "1"),
-        Config.New("D[2]")
+        DymeConfig.New("D[2]")
           .AddProperty("a", new[] { "2.1", "2.2" }),
-        Config.New("D[3]")
+        DymeConfig.New("D[3]")
           .AddProperty("IMPORT.DefaultSetup", "D[2]")
       };
 
-      var testConfig = Config.New("TestConfig")
+      var testConfig = DymeConfig.New("TestConfig")
         .AddProperty("IMPORT.DefaultSetup", "D[1]")
         .AddProperty("IMPORT.DefaultSetup2", new[] { "D[3]" });
 
@@ -426,10 +426,10 @@ namespace DymeExpansion.Core.Tests.Services
       };
 
       // Act...
-      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new DymeCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 
@@ -437,16 +437,16 @@ namespace DymeExpansion.Core.Tests.Services
     public void ResolveSetup_3DefaultSetups2LevelsDeepWithExpansionsReversePriority()
     {
       // Arrange...
-      var configLibrary = new List<Config>(){
-        Config.New("D[1]")
+      var configLibrary = new List<DymeConfig>(){
+        DymeConfig.New("D[1]")
           .AddProperty("a", "1"),
-        Config.New("D[2]")
+        DymeConfig.New("D[2]")
           .AddProperty("a", new[] { "2.1", "2.2" }),
-        Config.New("D[3]")
+        DymeConfig.New("D[3]")
           .AddProperty("IMPORT.DefaultSetup", "D[2]")
       };
 
-      var testConfig = Config.New("TestConfig")
+      var testConfig = DymeConfig.New("TestConfig")
         .AddProperty("IMPORT.DefaultSetup", "D[3]")
         .AddProperty("IMPORT.DefaultSetup2", new[] { "D[1]" });
 
@@ -455,10 +455,10 @@ namespace DymeExpansion.Core.Tests.Services
       };
 
       // Act...
-      var testCases = new TestCaseLoader().CasesFromConfigs(testConfig, configLibrary);
+      var testCases = new DymeCaseLoader().CasesFromConfigs(testConfig, configLibrary);
 
       // Assert
-      var testCaseString = testCases.Select(tc => new TestCaseLoader().CaseToString(tc)).ToList();
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 

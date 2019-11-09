@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DymeExpansion.Core.Tests", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DymeExpansion.Samples.BrowserTests", "samples\DymeExpansion.Samples.BrowserTests\DymeExpansion.Samples.BrowserTests.csproj", "{5E617498-2354-4E95-8B75-85B04C28F83E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DymeExpansion.Samples.HelloWorld", "samples\DymeExpansion.Samples.HelloWorld\DymeExpansion.Samples.HelloWorld.csproj", "{5A1B3BB9-42CA-4231-BC70-BCD9052E0EF1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{5E617498-2354-4E95-8B75-85B04C28F83E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E617498-2354-4E95-8B75-85B04C28F83E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E617498-2354-4E95-8B75-85B04C28F83E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A1B3BB9-42CA-4231-BC70-BCD9052E0EF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A1B3BB9-42CA-4231-BC70-BCD9052E0EF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A1B3BB9-42CA-4231-BC70-BCD9052E0EF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A1B3BB9-42CA-4231-BC70-BCD9052E0EF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -41,6 +47,7 @@ Global
 		{22DA7A14-9247-4F7D-889A-1B93F3BB6693} = {FB5FFA28-356F-4F8D-8A63-C4DA5050E098}
 		{38C5DCE1-EF10-4ACE-9E61-DD262E3BCC19} = {AF590982-F7ED-4697-A97F-0E021D05241A}
 		{5E617498-2354-4E95-8B75-85B04C28F83E} = {0C7713C1-3108-40CF-9808-2ADD18808988}
+		{5A1B3BB9-42CA-4231-BC70-BCD9052E0EF1} = {0C7713C1-3108-40CF-9808-2ADD18808988}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AE796715-4154-4909-A3B9-E8E931986D37}
