@@ -6,12 +6,12 @@ using System.Linq;
 
 namespace DymeExpansion.Samples.BrowserTests
 {
-  public class SimpleTestCaseExpansion
+  public class ThirtyThreeThousandTestCases
   {
     
     // It might not look like it, but the following config generates over thirty three thousand test cases...
     [Test]
-    public void CasesFromConfigs_GivenSmallAmountOfConfig_ExpectManyTestCases()
+    public void CasesFromConfigs_GivenSmallAmountOfConfig_ExpectManyManyTestCases()
     {
       // Arrange...
       var sut = new DymeCaseLoader();
@@ -22,7 +22,7 @@ namespace DymeExpansion.Samples.BrowserTests
 
         DymeConfig.New("User")
           .AddProperty("IMPORT", "Application")
-          .AddProperty("user", new[]{"alice","bob","cathy","dave","eve","frank","grant","harry", "ivan" }),
+          .AddProperty("user", new[]{"alice","bob","cathy","dave","eve","frank" }),
 
         DymeConfig.New("Vehicle")
           .AddProperty("IMPORT", "User")
@@ -30,7 +30,7 @@ namespace DymeExpansion.Samples.BrowserTests
           .AddProperty("year", new[]{"2012", "2013", "2014","2015", "2016" } )
           .AddProperty("condition", new[]{"new", "used" })
           .AddProperty("type", new[]{"convertible", "suv", "4x4", "hatchback", "sudan" })
-          .AddProperty("feature", new[]{"airbags", "electric_windows", "seat_warmer", "adjustable_steering", "backwiper" })
+          .AddProperty("feature", new[]{"airbags", "seat_warmer", "backwiper" })
       };
       var topLevelConfig = configLibrary.Single(c => c.Name == "Vehicle");
 
