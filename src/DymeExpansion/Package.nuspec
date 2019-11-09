@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>DymeExpansion</id>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <authors>Jake Dyme</authors>
     <description>
       Allows you to make configs that will be expanded into test cases.
