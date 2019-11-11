@@ -166,6 +166,84 @@ namespace DymeExpansion.Core.Tests.Services
     }
 
     [Test]
+    public void CorrelationSameConfigs()
+    {
+      // Arrange...
+      var config = DymeConfig.New("TestConfig2")
+        .AddProperty("a", new[] { "1", "2" }, "correlationKey")
+        .AddProperty("b", new[] { "1", "2" }, "correlationKey");
+
+      var expectedCases = new[]{
+        "p:a(1) p:b(1)",
+        "p:a(2) p:b(2)"
+      };
+
+      // Act...
+      var testCases = DymeCaseLoader.CasesFromConfig(config);
+
+      // Assert
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
+      Assert.AreEqual(2, testCases.Count());
+      CollectionAssert.AreEquivalent(expectedCases, testCaseString);
+    }
+
+    [Test]
+    public void CorrelationImportedConfigs()
+    {
+      // Arrange...
+      var configLibrary = new List<DymeConfig>(){
+      DymeConfig.New("TestConfig1")
+        .AddProperty("a", new[] { "1", "2" }, "correlationKey")
+      };
+
+      var config = DymeConfig.New("TestConfig2")
+        .AddProperty("IMPORT", "TestConfig1")
+        .AddProperty("b", new[] { "1", "2" }, "correlationKey");
+
+      var expectedCases = new[]{
+        "p:a(1) p:b(1)",
+        "p:a(2) p:b(2)"
+      };
+
+      // Act...
+      var testCases = DymeCaseLoader.CasesFromConfig(config, configLibrary);
+
+      // Assert
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
+      Assert.AreEqual(2, testCases.Count());
+      CollectionAssert.AreEquivalent(expectedCases, testCaseString);
+    }
+
+    [Test]
+    public void CorrelationComposedConfigs()
+    {
+      // Arrange...
+      var configLibrary = new List<DymeConfig>(){
+      DymeConfig.New("TestConfig1")
+        .AddProperty("a", new[] { "1", "2" }, "correlationKey"),
+      DymeConfig.New("TestConfig2")
+        .AddProperty("b", new[] { "1", "2" }, "correlationKey")
+      };
+
+      var config = DymeConfig.New("TestConfig2")
+        .AddProperty("IMPORT", "TestConfig1")
+        .AddProperty("IMPORT", "TestConfig2");
+
+      var expectedCases = new[]{
+        "p:a(1) p:b(1)",
+        "p:a(2) p:b(2)"
+      };
+
+      // Act...
+      var testCases = DymeCaseLoader.CasesFromConfig(config, configLibrary);
+
+      // Assert
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
+      Assert.AreEqual(2, testCases.Count());
+      CollectionAssert.AreEquivalent(expectedCases, testCaseString);
+    }
+
+    [Test]
     public void ResolveSetup()
     {
       // Arrange...
