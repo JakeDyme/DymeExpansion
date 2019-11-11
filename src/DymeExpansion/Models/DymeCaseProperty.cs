@@ -8,6 +8,8 @@ namespace DymeExpansion.Core.Models
   {
     public string Name { get;set;}
     public string Value { get; set; }
+    internal int PropertyIndex { get; set; }
+    internal int ValueIndex { get; set; }
     internal ExpansionTypeEnum ExpansionType { get; set; } = ExpansionTypeEnum.expansive;
     public string CorrelationKey { get; set; }
     public DymeCaseProperty() { }

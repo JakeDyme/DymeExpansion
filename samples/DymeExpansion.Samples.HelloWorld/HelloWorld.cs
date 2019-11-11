@@ -217,6 +217,132 @@ namespace DymeExpansion.Samples.BrowserTests
     }
 
     [Test]
+    public void Correlation_AcrossConfigs_Basic()
+    {
+      var actualGreetings = new List<string>();
+
+      // Lets define some people properties with multiple values, and then correlate those properties using a correlation key...
+      var names = DymeConfig.New("NamesConfig")
+        .AddProperty("Name", new[] { "Ali Mire", "Bernice Newton" }, "someKey");
+
+      var ages = DymeConfig.New("AgeConfig")
+        .AddProperty("Age", new[] { "40", "35" }, "someKey");
+      // ..."someKey" will work fine here, but in larger or more complex config structures, you may want to consider using a GUID..
+
+      var genders = DymeConfig.New("GenderConfig")
+        .AddProperty("Gender", new[] { "male", "female" }, "someKey");
+
+      // Next we'll pull those people into our greeting config...
+      var greetings = DymeConfig.New("GreetingConfig")
+        .AddProperty("IMPORT", "NamesConfig")
+        .AddProperty("IMPORT", "AgeConfig")
+        .AddProperty("IMPORT", "GenderConfig")
+        .AddProperty("Greeting", new[] { "Hello World", "Bonjour le monde" });
+
+      // We'll create a library of configs...
+      var configLibrary = new[] { genders, names, ages, greetings };
+
+      //...and pass it in along with the config that we want to interpret...
+      var testCases = DymeCaseLoader.CasesFromConfig(greetings, configLibrary); //...(the passed in config library is used to resolve any "IMPORT" references)
+
+      // Extract the data from our new test cases...
+      foreach (var testCase in testCases)
+      {
+        var name = testCase["Name"];
+        var age = testCase["Age"];
+        var gender = testCase["Gender"];
+        var greeting = testCase["Greeting"];
+        var finalGreeting = $"{name} (a {age} year old {gender}) says {greeting}";
+        Debug.WriteLine(finalGreeting);
+        actualGreetings.Add(finalGreeting);
+      }
+
+      // Just to make sure that we have the right stuff...
+      var expectedGreetings = new[]
+      {
+        "Ali Mire (a 40 year old male) says Hello World",
+        "Ali Mire (a 40 year old male) says Bonjour le monde",
+        "Bernice Newton (a 35 year old female) says Hello World",
+        "Bernice Newton (a 35 year old female) says Bonjour le monde",
+      };
+      CollectionAssert.AreEquivalent(expectedGreetings, actualGreetings);
+
+      // Make sure that we don't have any of the wrong stuff...
+      var antiGreetings = new List<string>
+      {
+        "Ali Mire (a 40 year old female) says Hello World",
+        "Ali Mire (a 35 year old male) says Bonjour le monde",
+        "Ali Mire (a 35 year old female) says Bonjour le monde",
+        "Bernice Newton (a 35 year old male) says Hello World",
+        "Bernice Newton (a 40 year old female) says Bonjour le monde",
+        "Bernice Newton (a 40 year old male) says Bonjour le monde",
+      };
+      antiGreetings.ForEach(antiGreeting => CollectionAssert.DoesNotContain(actualGreetings, antiGreeting));
+
+    }
+    [Test]
+    public void Correlation_AcrossConfigs()
+    {
+      var actualGreetings = new List<string>();
+
+      // Lets define some people properties with multiple values, and then correlate those properties using a correlation key...
+      var names = DymeConfig.New("NamesConfig")
+        .AddProperty("Name", new[] { "Ali Mire", "Bernice Newton" }, "someKey")
+        .AddProperty("Age", new[] { "40", "35" }, "someKey");
+        
+      var genders = DymeConfig.New("GenderConfig")
+        .AddProperty("Gender", new[] { "male", "female" }, "someKey");
+      // ..."someKey" will work fine here, but in larger or more complex config structures, you may want to consider using a GUID..
+
+      // Next we'll pull those people into our greeting config...
+      var greetings = DymeConfig.New("GreetingConfig")
+        .AddProperty("IMPORT", "NamesConfig")
+        .AddProperty("IMPORT", "GenderConfig")
+        .AddProperty("Greeting", new[] { "Hello World", "Bonjour le monde" });
+
+      // We'll create a library of configs...
+      var configLibrary = new[] { names, genders, greetings };
+
+      //...and pass it in along with the config that we want to interpret...
+      var testCases = DymeCaseLoader.CasesFromConfig(greetings, configLibrary); //...(the passed in config library is used to resolve any "IMPORT" references)
+
+      // Extract the data from our new test cases...
+      foreach (var testCase in testCases)
+      {
+        var name = testCase["Name"];
+        var age = testCase["Age"];
+        var gender = testCase["Gender"];
+        var greeting = testCase["Greeting"];
+        var finalGreeting = $"{name} (a {age} year old {gender}) says {greeting}";
+        Debug.WriteLine(finalGreeting);
+        actualGreetings.Add(finalGreeting);
+      }
+
+      // Just to make sure that we have the right stuff...
+      var expectedGreetings = new[]
+      {
+        "Ali Mire (a 40 year old male) says Hello World",
+        "Ali Mire (a 40 year old male) says Bonjour le monde",
+        "Bernice Newton (a 35 year old female) says Hello World",
+        "Bernice Newton (a 35 year old female) says Bonjour le monde",
+      };
+      CollectionAssert.AreEquivalent(expectedGreetings, actualGreetings);
+
+      // Make sure that we don't have any of the wrong stuff...
+      var antiGreetings = new List<string>
+      {
+        "Ali Mire (a 40 year old female) says Hello World",
+        "Ali Mire (a 35 year old male) says Bonjour le monde",
+        "Ali Mire (a 35 year old female) says Bonjour le monde",
+        "Bernice Newton (a 35 year old male) says Hello World",
+        "Bernice Newton (a 40 year old female) says Bonjour le monde",
+        "Bernice Newton (a 40 year old male) says Bonjour le monde",
+      };
+      antiGreetings.ForEach(antiGreeting => CollectionAssert.DoesNotContain(actualGreetings, antiGreeting));
+    }
+
+
+    [Test]
     public void Composition_Basic()
     {
       var actualGreetings = new List<string>();

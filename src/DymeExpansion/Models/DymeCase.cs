@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -11,17 +12,25 @@ namespace DymeExpansion.Core.Models
 
     public string Property(string propertyName)
     {
+      ValidatePropertyExists(propertyName);
       return Properties.Single(p => p.Name == propertyName).Value;
     }
 
     public string this[string propertyName]
     {
-      get { return Properties.Single(p => p.Name == propertyName).Value; }
-      set { Properties.Single(p => p.Name == propertyName).Value = value; }
+      get {
+        ValidatePropertyExists(propertyName);
+        return Properties.Single(p => p.Name == propertyName).Value; 
+      }
+      set {
+        ValidatePropertyExists(propertyName);
+        Properties.Single(p => p.Name == propertyName).Value = value; 
+      }
     }
 
     public string PropertyOrDefault(string propertyName)
     {
+      ValidatePropertyExists(propertyName);
       return Properties.SingleOrDefault(p => p.Name == propertyName)?.Value;
     }
 
@@ -32,6 +41,11 @@ namespace DymeExpansion.Core.Models
         .Aggregate((a,b) => $"{a}|{b}");
     }
 
+    private void ValidatePropertyExists(string name)
+    {
+      if (!Properties.Any(p => p.Name == name))
+        throw new Exception($"There is no property by the name \"{name}\" in the case");
+    }
 
   }
 }

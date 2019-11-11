@@ -87,71 +87,94 @@ namespace DymeExpansion.Core.Services
     internal IEnumerable<PropertyNode> PropertyNodesFromConfig(DymeConfig parentConfig, IEnumerable<DymeConfig> configLibrary) { 
       
       var propertyNodes = new List<PropertyNode>();
-      foreach (var prop in parentConfig.Properties)
+      for (var i = 0; i < parentConfig.Properties.Count(); i++)
       {
+        var prop = parentConfig.Properties.ElementAt(i);
         var newPropertyNode = new PropertyNode(prop.Name, NodeTypeEnum.PropertyNode, prop.CorrelationKey);
         newPropertyNode.Children = LeafNodesFromConfigProperty(configLibrary, prop).Select(n => n as Node).ToList();
+        newPropertyNode.ValueIndex = i;
         propertyNodes.Add(newPropertyNode);
       }
       return propertyNodes;
     }
 
-    internal IEnumerable<DymeCase> CasesFromNodeTree(Node forNode, Node parent = null)
+    private void ValidatePropertyNode(Node forNode)
     {
-      if (forNode.Children.Count == 0)
-      {
-        var newCase = new DymeCase();
-        newCase.Properties = newCase.Properties.Append(new DymeCaseProperty(parent.Value, forNode.Value));
-        return new List<DymeCase>() { newCase };
-      }
+      if (forNode.Children.Count == 0) 
+        throw new Exception("A property node must have child nodes, because the child nodes represent property values");
+    }
 
-      if (forNode.NodeType == NodeTypeEnum.PropertyNode)
+    private static IEnumerable<DymeCase> CaseFromNode(Node forNode, Node parent)
+    {
+      var propertyNamePart = parent;
+      var propertyValuePart = forNode;
+      var newProperty = new DymeCaseProperty(propertyNamePart.Value, propertyValuePart.Value, propertyNamePart.CorrelationKey);
+      newProperty.PropertyIndex = propertyNamePart.ValueIndex;
+      newProperty.ValueIndex = propertyValuePart.ValueIndex;
+      var newCase = new DymeCase();
+      newCase.Properties = new[] { newProperty };
+      return new List<DymeCase>() { newCase };
+    }
+
+    private static IEnumerable<DymeCase> Distinct(IEnumerable<DymeCase> cases)
+    {
+      return cases
+                .GroupBy(c => c.Hash())
+                .Select(g => g.First())
+                .ToList();
+    }
+
+    private static bool IsPropertyNamePartNode(Node forNode)
+    {
+      return forNode.NodeType == NodeTypeEnum.PropertyNode;
+    }
+
+    private static bool IsPropertyValueOrReferencePartNode(Node forNode)
+    {
+      return forNode.NodeType == NodeTypeEnum.ValueNode;
+    }
+
+    internal IEnumerable<DymeCase> CasesFromNodeTree(Node node, Node parentNode = null)
+    {
+      var mergedCases = new List<DymeCase>();
+      
+      if (IsPropertyNamePartNode(node))
       {
         /// Because its a property, the child cases will expand eachother. (be added, or additively extracted)
-        var mergedCases = forNode.Children
-          .SelectMany(c => CasesFromNodeTree(c, forNode));
-
-        var distinctCases = mergedCases
-          .GroupBy(c => c.Hash())
-          .Select(g => g.First())
+        ValidatePropertyNode(node);
+        mergedCases = node.Children
+          .SelectMany(c => CasesFromNodeTree(c, node))
           .ToList();
-
-        return distinctCases;
       }
-
-      if (forNode.NodeType == NodeTypeEnum.ValueNode)
+      
+      else if (IsPropertyValueOrReferencePartNode(node))
       {
+        if (IsValueNodeWithNoChildren(node)) return CaseFromNode(node, parentNode);
         /// Because its a leaf, the child cases will overlay eachother. (be multiplied, or aggregated)
-        var mergedCasesByCorrelationGroup = forNode.Children
-          .GroupBy(n => n.CorrelationKey)
-          .Select(correlationGroup => correlationGroup
-            .Select(node => CasesFromNodeTree(node, forNode))
-            .Aggregate((caseSet1, caseSet2) => MergeCorrelatedCases(caseSet1, caseSet2)))
-          .ToList();
-
-        var mergedCases = mergedCasesByCorrelationGroup
+        mergedCases = node.Children
+          .Select(childNode => CasesFromNodeTree(childNode, node))
           .Aggregate((caseSet1, caseSet2) => MergeCaseSets(caseSet1, caseSet2))
           .ToList();
-
-        var distinctCases = mergedCases
-          .GroupBy(c => c.Hash())
-          .Select(g => g.First())
-          .ToList();
-
-        return distinctCases;
       }
-
+      return Distinct(mergedCases);
       throw new Exception("Unknown NodeType");
+    }
+
+    private bool IsValueNodeWithNoChildren(Node forNode)
+    {
+      return forNode.Children.Count == 0 && forNode.NodeType == NodeTypeEnum.ValueNode;
     }
 
     private IEnumerable<ValueNode> LeafNodesFromConfigProperty(IEnumerable<DymeConfig> configLibrary, DymeConfigProperty configProperty)
     {
       Regex match = new Regex(_regexMatchForSpecialPropertyConfigReference);
       var leafNodes = new List<ValueNode>();
-      foreach (var value in configProperty.Values)
+      for ( var i = 0; i < configProperty.Values.Count(); i++) //(var value in configProperty.Values)
       {
+        var value = configProperty.Values.ElementAt(i);
         var leafNode = new ValueNode(value, NodeTypeEnum.ValueNode);
         leafNode.LeafType = ValueTypeEnum.Text;
+        leafNode.ValueIndex = i;
         if (match.IsMatch(configProperty.Name))
         {
           leafNode.LeafType = ValueTypeEnum.ImportedSetup;
@@ -164,33 +187,31 @@ namespace DymeExpansion.Core.Services
       return leafNodes;
     }
 
-    private IEnumerable<DymeCase> MergeCorrelatedCases(IEnumerable<DymeCase> caseSet1, IEnumerable<DymeCase> caseSet2)
-    {
-      var finalLeafNodeSet = new List<DymeCase>();
-      var caseSet1L = caseSet1.ToList();
-      var caseSet2L = caseSet2.ToList();
-      for (var caseIndex = 0; caseIndex < caseSet1L.Count(); caseIndex++)
-      {
-        var newMergedCase = OverlayCases(caseSet1.ElementAt(caseIndex),caseSet2.ElementAt(caseIndex) );
-        finalLeafNodeSet.Add(newMergedCase);
-      }
-      return finalLeafNodeSet;
-    }
-
     private IEnumerable<DymeCase> MergeCaseSets(IEnumerable<DymeCase> caseSet1, IEnumerable<DymeCase> caseSet2)
     {
-      var finalLeafNodeSet = new List<DymeCase>();
-      /// Expansion happens here, this nested foreach creates a cartesian product of properties over test cases...
-      foreach (var leafNode1 in caseSet1)
+      var finalCaseSet = new List<DymeCase>();
+      foreach (var case1 in caseSet1)
       {
-        foreach (var leafNode2 in caseSet2)
+        foreach (var case2 in caseSet2)
         {
+          /// check if merged case is allowed based on any correlations...
+          if (PropertiesAreCorrelatedButValueIndexesDontMatch(case1, case2)) continue;
           /// This merges different properties into one case (or overrides properties if they share the same name)...
-          var newMergedCase = OverlayCases(leafNode1, leafNode2);
-          finalLeafNodeSet.Add(newMergedCase);
+          var newMergedCase = OverlayCases(case1, case2);
+          finalCaseSet.Add(newMergedCase);
         }
       }
-      return finalLeafNodeSet;
+      return finalCaseSet;
+    }
+
+    private bool PropertiesAreCorrelatedButValueIndexesDontMatch(DymeCase case1, DymeCase case2)
+    {
+      /// An implicit rule of correlation in this system is that for any given permutation of 
+      /// property-values the value-indexes of correlated properties must match...
+      return (case1.Properties.Any(p_c1 => case2.Properties.Any(p_c2 =>
+            p_c1.CorrelationKey != null &&
+            p_c1.CorrelationKey == p_c2.CorrelationKey &&
+            p_c1.ValueIndex != p_c2.ValueIndex)));
     }
 
     private DymeCase OverlayCases(DymeCase baseCase, DymeCase overlayCase)
@@ -198,7 +219,7 @@ namespace DymeExpansion.Core.Services
       var newPropertySet = new List<DymeCaseProperty>();
       newPropertySet.AddRange(overlayCase.Properties.ToList());
       newPropertySet.AddRange(baseCase.Properties.Where(bc => !overlayCase.Properties.Any(op => op.Name == bc.Name)));
-      return new DymeCase(){Properties = newPropertySet };
+      return new DymeCase(){ Properties = newPropertySet };
     }
 
   }

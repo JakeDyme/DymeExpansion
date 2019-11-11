@@ -36,21 +36,6 @@ namespace DymeExpansion.Core.Tests.Models
       Assert.AreEqual("Bob", result);
     }
 
-    [Test]
-    public void PropertyOrDefault_GivenNonExistentPropertyName_ExpectNull()
-    {
-      // Arrange...
-      var sut = new DymeCase();
-      sut.Properties = new List<DymeCaseProperty>()
-      {
-        new DymeCaseProperty("Name", "Bob")
-      };
-      // Act...
-      var result = sut.PropertyOrDefault("SomeOtherField");
-      // Assert...
-      Assert.IsNull(result);
-    }
-
 
   }
 }
