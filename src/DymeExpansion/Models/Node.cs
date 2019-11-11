@@ -11,6 +11,7 @@ namespace DymeExpansion.Core.Models
   internal class Node : INode
   {
     public string Value { get;set;}
+    public int ValueIndex { get; set;}
     public ValueTypeEnum LeafType {get;set; } = ValueTypeEnum.Irrelevant;
     public NodeTypeEnum NodeType { get;set;}
     public string CorrelationKey { get;set; }

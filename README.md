@@ -155,19 +155,19 @@ Bernice Newton (a 40 year old male) says Hello World
 */
 ```
 ## Correlation
-Another way to bundle data is to correlate properties. This can be done by adding a common correlation key to the properties that you want to correlate. Not all properties in the same config have to be correlated, but properties can only be correlated inside one config. In other words, you cannot correlate properties across configs. Correlated proprties must have the same number of values.
+Another way to bundle data is to correlate properties. This can be done by adding a common correlation key to the properties that you want to correlate. Correlated properties must have the same number of values.
 ### Example: Correlation
 ```C#
 // Define properties with multiple values, and then correlate those properties with a correlation key...
 var people = DymeConfig.New("PeopleConfig")
   .AddProperty("Name",   new[]{ "Ali Mire", "Bernice Newton" }, "someKey")
-  .AddProperty("Age",    new[]{ "40",       "35" },             "someKey")
   .AddProperty("Gender", new[]{ "male",     "female" },         "someKey");
 // ..."someKey" will work fine here, but in larger or more complex config structures, you may want to consider using a GUID.
 
 // Pull those people into our greeting config...
 var greetings = DymeConfig.New("GreetingConfig")
   .AddProperty("IMPORT", "PeopleConfig")
+  .AddProperty("Age", new[]{ "40", "35" }, "someKey")
   .AddProperty("Greeting", new[] { "Hello World", "Bonjour le monde" });
 
 // We'll create a library of configs...
@@ -262,30 +262,30 @@ Ali says Bon achat
 
 ### Testing a website on different devices
 ```C#
- var configLibrary = new List<DymeConfig>{
-// Device farm details...
-DymeConfig.New("DeviceFarm")
-  .AddProperty("df.hubUrl", "https://devicefarm.com/hub")
-  .AddProperty("df.login", "JakeD")
-  .AddProperty("df.ApiKey", "SOME+API+KEY"),
+var configLibrary = new List<DymeConfig>{
+  // Device farm details...
+  DymeConfig.New("DeviceFarm")
+    .AddProperty("df.hubUrl", "https://devicefarm.com/hub")
+    .AddProperty("df.login", "JakeD")
+    .AddProperty("df.ApiKey", "SOME+API+KEY"),
 
-// Capabilities for an IPhone device...
-DymeConfig.New("IPhone7")
-  .AddProperty("cap.deviceName", "iPhone 7 Simulator")
-  .AddProperty("cap.appiumVersion", "1.15.0")
-  .AddProperty("cap.deviceOrientation", "portrait")
-  .AddProperty("cap.platformVersion", "13.0")
-  .AddProperty("cap.platformName", "iOS")
-  .AddProperty("cap.browserName", "Safari"),
+  // Capabilities for an IPhone device...
+  DymeConfig.New("IPhone7")
+    .AddProperty("cap.deviceName", "iPhone 7 Simulator")
+    .AddProperty("cap.appiumVersion", "1.15.0")
+    .AddProperty("cap.deviceOrientation", "portrait")
+    .AddProperty("cap.platformVersion", "13.0")
+    .AddProperty("cap.platformName", "iOS")
+    .AddProperty("cap.browserName", "Safari"),
 
-// Capabilities for a Samsung device...
-DymeConfig.New("SamsungGalaxyS7")
-  .AddProperty("cap.deviceName", "Samsung Galaxy S7 Emulator")
-  .AddProperty("cap.appiumVersion", "1.9.1")
-  .AddProperty("cap.deviceOrientation", "portrait")
-  .AddProperty("cap.platformVersion", "8.1")
-  .AddProperty("cap.platformName", "Android")
-  .AddProperty("cap.browserName", "Chrome")
+  // Capabilities for a Samsung device...
+  DymeConfig.New("SamsungGalaxyS7")
+    .AddProperty("cap.deviceName", "Samsung Galaxy S7 Emulator")
+    .AddProperty("cap.appiumVersion", "1.9.1")
+    .AddProperty("cap.deviceOrientation", "portrait")
+    .AddProperty("cap.platformVersion", "8.1")
+    .AddProperty("cap.platformName", "Android")
+    .AddProperty("cap.browserName", "Chrome")
 };
 
 // Create a composition config for your test that brings all your information together...
