@@ -257,6 +257,17 @@ Ali says Bon achat
 ---------------------------------
 */
 ```
+## Pooling
+A pool property is a special type of property.<br>
+It does not expand the case set by having multiple values, it only complements the final case set with its values. <br>
+Any property can be made into a pool property by setting the "ExpansionType" to "pool". <br>
+If the case set has more than the pool set, then the values from the pool set are recycled.<br>
+If the pool set has more values than the case set, then the extra values are discarded.<br>
+Values are picked from the pool set iteratively from beginning to end, and then starts at the beginning again.
+```C#
+
+```
+
 
 ## More Examples
 
