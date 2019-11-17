@@ -215,7 +215,7 @@ namespace DymeExpansion.Core.Tests.Services
     {
       // Arrange...
       var config1 = DymeConfig.New("TestConfig1")
-        .AddProperty("b", new[] { "1", "2" });
+        .AddProperty("b", new[] { "1", "2" }, ExpansionTypeEnum.pool);
 
       var config2 = DymeConfig.New("TestConfig2")
         .AddProperty("IMPORT", "TestConfig1")
