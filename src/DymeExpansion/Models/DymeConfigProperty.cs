@@ -13,16 +13,23 @@ namespace DymeExpansion.Core.Models
     public string CorrelationKey { get; set; }
     public DymeConfigProperty() { }
 
-    public DymeConfigProperty(string name,  string value, string correlationKey = null){
+    public DymeConfigProperty(string name,  string value){
       Name = name;
       Values = new[] { value };
-      CorrelationKey = correlationKey;
+      //CorrelationKey = correlationKey;
     }
 
     public DymeConfigProperty(string name,  string[] values, string correlationKey = null){
       Name = name;
       Values = values;
       CorrelationKey = correlationKey;
+    }
+
+    public DymeConfigProperty(string name, string[] values, ExpansionTypeEnum propertyExpansionType)
+    {
+      Name = name;
+      Values = values;
+      ExpansionType = propertyExpansionType;
     }
 
     public DymeConfigProperty WithValue(string value)
@@ -37,5 +44,9 @@ namespace DymeExpansion.Core.Models
       return WithValue(value);
     }
 
+    public override string ToString()
+    {
+      return $"\"{Name}\": [{Values.Select(v => "\""+v+ "\"").Aggregate((a,b) => a + "," + b)}]";
+    }
   }
 }

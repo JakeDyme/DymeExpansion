@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using DymeExpansion.Core.Enums;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DymeExpansion.Core.Models
@@ -26,9 +27,15 @@ namespace DymeExpansion.Core.Models
       return this;
     }
 
-    public DymeConfig AddProperty(string name, string value, string correlationKey = null)
+    public DymeConfig AddProperty(string name, string[] values, ExpansionTypeEnum expansionType)
     {
-      Properties.Add(new DymeConfigProperty(name, value, correlationKey));
+      Properties.Add(new DymeConfigProperty(name, values, expansionType));
+      return this;
+    }
+
+    public DymeConfig AddProperty(string name, string value)
+    {
+      Properties.Add(new DymeConfigProperty(name, value));
       return this;
     }
 
@@ -40,5 +47,9 @@ namespace DymeExpansion.Core.Models
       return newProperty;
     }
 
+    public override string ToString()
+    {
+      return $"{{\"Name\": \"{Name ?? ""}\" \"Properties\": {{{Properties.Select(p => p.ToString()).Aggregate((a,b) => a + ", " + b )}}}}}";
+    }
   }
 }
