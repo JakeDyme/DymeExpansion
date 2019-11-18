@@ -33,6 +33,12 @@ namespace DymeExpansion.Core.Models
       return this;
     }
 
+    public DymeConfig AddProperty(string name, string[] values, ExpansionTypeEnum expansionType, string correlationKey = null)
+    {
+      Properties.Add(new DymeConfigProperty(name, values, expansionType, correlationKey));
+      return this;
+    }
+
     public DymeConfig AddProperty(string name, string value)
     {
       Properties.Add(new DymeConfigProperty(name, value));

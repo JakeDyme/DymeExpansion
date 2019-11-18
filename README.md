@@ -258,14 +258,38 @@ Ali says Bon achat
 */
 ```
 ## Pooling
-A pool property is a special type of property.<br>
-It does not expand the case set by having multiple values, it only complements the final case set with its values. <br>
-Any property can be made into a pool property by setting the "ExpansionType" to "pool". <br>
-If the case set has more than the pool set, then the values from the pool set are recycled.<br>
-If the pool set has more values than the case set, then the extra values are discarded.<br>
-Values are picked from the pool set iteratively from beginning to end, and then starts at the beginning again.
+A pool-property is a special type of property.<br>
+It does not expand the case-set by having multiple values, it only complements the final case-set with its values. <br>
+Any property can be made into a pool-property by setting the "ExpansionType" to "pool". <br>
+If there are more cases than values in the pool-set, then the values from the pool-set are recycled.<br>
+If the pool-set has more values than the case-set, then the extra values are discarded.<br>
+Values are picked from the pool-set iteratively from beginning to end, and then starts at the beginning again.<br>
+Pool properties are applied to any case that derives from the config in which the property was defined, or, in any case that contains a property that shares a correlation key with the pool property (if correlation is explicitly defined).
 ```C#
+// Define 4 people that will be greeting,
+// and create a greeting pool to select greetings from... 
+var people = DymeConfig.New("PeopleConfig")
+  .AddProperty("Name", new[] { "Ali", "Bernice", "Chi", "David" })
+  .AddProperty("Greeting", new[] { "Hello World", "Bonjour le monde" }, ExpansionTypeEnum.pool);
 
+// Generate the test cases...
+var testCases = DymeCaseLoader.CasesFromConfig(people);
+
+// Extract the data from our new test cases...
+foreach (var testCase in testCases)
+{
+  var finalGreeting = testCase["Name"] + " says " + testCase["Greeting"];
+  Debug.WriteLine(finalGreeting);
+}
+/*
+Outputs:
+---------------------------------
+Ali says Hello World
+Bernice says Bonjour le monde
+Chi says Hello World
+David says Bonjour le monde
+---------------------------------
+*/
 ```
 
 

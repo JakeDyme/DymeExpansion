@@ -4,14 +4,14 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DymeExpansion.Samples.BrowserTests
+namespace DymeExpansion.Samples.HelloWorld
 {
   public class ThirtyThreeThousandTestCases
   {
     
     // It might not look like it, but the following config generates over thirty three thousand test cases...
     [Test]
-    public void CasesFromConfigs_GivenSmallAmountOfConfig_ExpectManyManyTestCases()
+    public void OverThirtyThreeThousandTestCases_Given3ConfigsWith7PropertiesAndASumOf34Values()
     {
       // Arrange...
       var sut = new DymeCaseLoader();

@@ -48,27 +48,25 @@ namespace DymeExpansion.Core.Services
     public IEnumerable<DymeCase> CasesFromConfigs(DymeConfig mainConfig, IEnumerable<DymeConfig> configLibrary) {
       var postApplyConfigProperties = new List<DymeConfigProperty>();
       /// Ensure config naming and structure...
-      configLibrary = configLibrary.Select(c => c.ConfigWithNameFromConfigWithNameProperty(_regexMatchForSpecialPropertyConfigName));
+      var namedConfigLibrary = configLibrary.Select(c => c.ConfigWithNameFromConfigWithNameProperty(_regexMatchForSpecialPropertyConfigName));
       mainConfig = mainConfig.ConfigWithNameFromConfigWithNameProperty(_regexMatchForSpecialPropertyConfigName);
       /// Get relevant configs from library...
-      var receedingConfigLibrary = configLibrary.ToList();
-      configLibrary = GetRelevantConfigsFromLibrary(mainConfig, ref receedingConfigLibrary);
+      var relevantConfigLibrary = GetRelevantConfigsFromLibrary(mainConfig, namedConfigLibrary);
       /// Pre-Process library configs (extract post-apply-cases)...
       postApplyConfigProperties.AddRange(PreProcessConfigAndReturnPostApplyConfigs(mainConfig, out DymeConfig processedMainConfig));
       var processedConfigLibrary = new List<DymeConfig>();
-      foreach (var libraryConfig in configLibrary)
+      foreach (var libraryConfig in relevantConfigLibrary)
       {
         postApplyConfigProperties.AddRange(PreProcessConfigAndReturnPostApplyConfigs(libraryConfig, out DymeConfig processedLibraryConfig));
         processedConfigLibrary.Add(processedLibraryConfig);
       }
-      configLibrary = processedConfigLibrary;
       /// Convert configs to node tree...
-      var nodeTree = NodeTreeFromConfigs(mainConfig, configLibrary);
+      var nodeTree = NodeTreeFromConfigs(mainConfig, processedConfigLibrary);
       /// Convert node tree to cases...
       var cases = CasesFromNodeTree(nodeTree);
-      ///Apply post-apply-cases
+      ///Apply post-apply-cases...
       var finalCases = PostCasesProcessing(cases, postApplyConfigProperties);
-      return finalCases;
+      return finalCases.ToList();
     }
 
     private IEnumerable<DymeConfigProperty> PreProcessConfigAndReturnPostApplyConfigs(DymeConfig inConfig, out DymeConfig outConfig)
@@ -90,22 +88,36 @@ namespace DymeExpansion.Core.Services
 
     private IEnumerable<DymeCase> PostCasesProcessing(IEnumerable<DymeCase> dymeCases, IEnumerable<DymeConfigProperty> postApplyProperties)
     {
-      Dictionary<string, int> postApplyPropertyValueTrackingIndexes = postApplyProperties.ToDictionary(i => i.CorrelationKey, i => 0);
+      Dictionary<string, int> poolPropertyPickedCount = postApplyProperties.ToDictionary(i => i.CorrelationKey, i => 0);
       foreach (var postApplyProp in postApplyProperties)
       {
         foreach (var dymeCase in dymeCases)
         {
-          /// Find the place holder property in th case (if it exists)...
+          /// Find the place-holder property in the case (if it exists)...
           var matchingProperty = dymeCase.Properties.SingleOrDefault(caseProp => caseProp.Name == postApplyProp.Name && caseProp.CorrelationKey == postApplyProp.CorrelationKey);
+          var newProperty = new DymeCaseProperty();
+          if (matchingProperty != null) {
+            /// Remove the existing placeholder property...
+            dymeCase.Properties = dymeCase.Properties.Except(new[] { matchingProperty }).ToList();
+            /// Create a replacement for the placeholder property...
+            newProperty = matchingProperty.Clone();
+          }
+          else {
+            /// If an explicit placeholder doesn't exist then check for any correlated properties...
+            matchingProperty = dymeCase.Properties.FirstOrDefault(caseProp => caseProp.CorrelationKey == postApplyProp.CorrelationKey);
+            /// Create a new property to inject into the case...
+            newProperty = new DymeCaseProperty(postApplyProp.Name, null, postApplyProp.CorrelationKey);
+          }
           if (matchingProperty == null) continue;
-          /// Remove the existing placeholder property...
-          dymeCase.Properties = dymeCase.Properties.Except(new[] { matchingProperty }).ToList();
-          /// Create a new property from the extracted placeholder property...
-          var newProperty = matchingProperty.Clone();
           /// Pick the next value for this specific pool property...
-          var caseIndex = postApplyPropertyValueTrackingIndexes[postApplyProp.CorrelationKey];
-          postApplyPropertyValueTrackingIndexes[postApplyProp.CorrelationKey] += 1;
-          newProperty.Value = postApplyProp.Values.ElementAt(caseIndex % postApplyProp.Values.Count());
+          var caseIndex = poolPropertyPickedCount[postApplyProp.CorrelationKey];
+          /// Update the picked tracking count...
+          poolPropertyPickedCount[postApplyProp.CorrelationKey] += 1;
+          /// Determine the actual pool index...
+          var poolIndex = caseIndex % postApplyProp.Values.Count();
+          /// Assign the appropriate pool value to the property...
+          newProperty.Value = postApplyProp.Values.ElementAt(poolIndex);
+          newProperty.ValueIndex = poolIndex;
           /// Add new the case property back to the case...
           dymeCase.Properties = dymeCase.Properties.Append(newProperty);
         }
@@ -113,47 +125,34 @@ namespace DymeExpansion.Core.Services
       return dymeCases;
     }
 
-
     /// <summary>
     /// Extract only the configs that are actually used in config tree...
     /// </summary>
     /// <param name="config"></param>
     /// <param name="receedingConfigLibrary" description="a list that gets its values removed as they are processed in order to make subsequent queries on the list more efficient"></param>
     /// <returns></returns>
-    private IEnumerable<DymeConfig> GetRelevantConfigsFromLibrary(DymeConfig config, ref List<DymeConfig> receedingConfigLibrary)
+    private IEnumerable<DymeConfig> GetRelevantConfigsFromLibrary(DymeConfig config, IEnumerable<DymeConfig> configLibrary)
     {
       var importConfigNames = GetImportTypeConfigProperties(config).SelectMany(prop => prop.Values);
       var importedConfigs = new List<DymeConfig>();
       foreach (var configName in importConfigNames)
       {
-        var importedConfig = GetConfigFromReceedingLibrary(configName, ref receedingConfigLibrary);
+        var importedConfig = GetConfigFromLibrary(configName, configLibrary);
+        if (importedConfigs.Any(c => c.Name == importedConfig.Name)) continue;
         importedConfigs.Add(importedConfig);
-        importedConfigs.AddRange(GetRelevantConfigsFromLibrary(importedConfig, ref receedingConfigLibrary));
+        var importedChildConfigs = GetRelevantConfigsFromLibrary(importedConfig, configLibrary)
+          .Where(cc => !importedConfigs.Any(childConfig => childConfig.Name == cc.Name));
+        importedConfigs.AddRange(importedChildConfigs);
       }
       return importedConfigs;
     }
 
-    private DymeConfig GetConfigFromReceedingLibrary(string configName, ref List<DymeConfig> receedingConfigLibrary)
+    private DymeConfig GetConfigFromLibrary(string configName, IEnumerable<DymeConfig> configLibrary)
     {
-      var count = 0;
-      DymeConfig found = null;
-      var remaining = new List<DymeConfig>();
-      foreach (var config in receedingConfigLibrary)
-      {
-        if (config.Name == configName)
-        {
-          count++;
-          if (count > 1) throw new Exception($"There are multiple conflicting configs in your library by the name of: \"{configName}\". Please rename one of the configs.");
-          found = config;
-        }
-        else
-        {
-          remaining.Add(config);
-        }
-      }
-      if (count == 0) throw new Exception($"The referenced config by the name of: \"{configName}\", does not exist in your config library.");
-      receedingConfigLibrary = remaining;
-      return found;
+      var foundConfigs = configLibrary.Where(c => c.Name == configName).ToList();
+      if (foundConfigs.Count() > 1) throw new Exception($"There are multiple conflicting configs in your library by the name of: \"{configName}\". Please rename one of the configs.");
+      if (foundConfigs.Count() < 1) throw new Exception($"The referenced config by the name of: \"{configName}\", does not exist in your config library.");
+      return foundConfigs.Single();
     }
 
     private IEnumerable<DymeConfigProperty> GetImportTypeConfigProperties(DymeConfig config)
@@ -250,9 +249,16 @@ namespace DymeExpansion.Core.Services
       return Distinct(mergedCases);
     }
 
+    /// <summary>
+    /// This method gets called at the leaf-most parts of the node-tree.
+    /// </summary>
+    /// <param name="valueNode"></param>
+    /// <param name="parent"></param>
+    /// <param name="treePath"></param>
+    /// <param name="configPath"></param>
+    /// <returns></returns>
     private static IEnumerable<DymeCase> CaseFromValueNode(Node valueNode, Node parent, string treePath, string[] configPath)
     {
-      /// This method gets called at the leaf-most parts of the node-tree
       var propertyNamePart = parent;
       var propertyValuePart = valueNode;
       var newProperty = new DymeCaseProperty(propertyNamePart.Value, propertyValuePart.Value, propertyNamePart.CorrelationKey);

@@ -25,11 +25,12 @@ namespace DymeExpansion.Core.Models
       CorrelationKey = correlationKey;
     }
 
-    public DymeConfigProperty(string name, string[] values, ExpansionTypeEnum propertyExpansionType)
+    public DymeConfigProperty(string name, string[] values, ExpansionTypeEnum propertyExpansionType, string correlationKey = null)
     {
       Name = name;
       Values = values;
       ExpansionType = propertyExpansionType;
+      CorrelationKey = correlationKey;
     }
 
     public DymeConfigProperty WithValue(string value)
