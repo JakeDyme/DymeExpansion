@@ -47,5 +47,9 @@ namespace DymeExpansion.Core.Models
         throw new Exception($"There is no property by the name \"{name}\" in the case");
     }
 
+    public bool Has(string propertyName)
+    {
+      return Properties.Any(p => p.Name == propertyName);
+    }
   }
 }

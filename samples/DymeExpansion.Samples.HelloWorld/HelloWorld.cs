@@ -1,23 +1,85 @@
-﻿using DymeExpansion.Core.Models;
+﻿using DymeExpansion.Core.Enums;
+using DymeExpansion.Core.Models;
 using DymeExpansion.Core.Services;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DymeExpansion.Samples.BrowserTests
+namespace DymeExpansion.Samples.HelloWorld
 {
   public class HelloWorld
   {
+
+    [Test]
+    public void Config_Basic()
+    {
+      var actualGreetings = new List<string>();
+
+      // First we'll create some config using the "DymeConfig" class...
+      var testConfig = DymeConfig.New("HelloWorld")
+        .AddProperty("Name", "Ali");
+
+      // Then we'll automatically generate our test cases using the "TestCaseLoader" class...
+      var testCases = DymeCaseLoader.CasesFromConfig(testConfig);
+
+      // Extract the data from the test cases...
+      foreach (var testCase in testCases)
+      {
+        var greeting = testCase["Name"] + " says Hello World";
+        Debug.WriteLine(greeting);
+        actualGreetings.Add(greeting);
+      }
+
+      // Just to make sure that we're saying the right stuff...
+      var expectedGreetings = new[]
+      {
+        "Ali says Hello World",
+      };
+
+      // Lets double check the data that we generated from our test cases...
+      CollectionAssert.AreEquivalent(expectedGreetings, actualGreetings);
+    }
+
+    [Test]
+    public void Config_TwoProperties()
+    {
+      var actualGreetings = new List<string>();
+
+      // First we'll create some config using the "DymeConfig" class...
+      var testConfig = DymeConfig.New("HelloWorld")
+        .AddProperty("Name", "Ali")
+        .AddProperty("Greeting", "Hello World");
+
+      // Then we'll automatically generate our test cases using the "TestCaseLoader" class...
+      var testCases = DymeCaseLoader.CasesFromConfig(testConfig);
+
+      // Now we can extract the data from our test cases...
+      foreach (var testCase in testCases)
+      {
+        var greeting = testCase["Name"] + " says " + testCase["Greeting"];
+        Debug.WriteLine(greeting);
+        actualGreetings.Add(greeting);
+      }
+
+      // Just to make sure that we're saying the right stuff...
+      var expectedGreetings = new[]
+      {
+        "Ali says Hello World",
+      };
+
+      // Lets double check the data that we generated from our test cases...
+      CollectionAssert.AreEquivalent(expectedGreetings, actualGreetings);
+
+    }
+
     [Test]
     public void Expansion_Basic()
     {
       var actualGreetings = new List<string>();
 
-      // First we'll create some config using the "Config" class...
+      // First we'll create some config using the "DymeConfig" class...
       var testConfig = DymeConfig.New("HelloWorld")
         .AddProperty("Name", "Ali" )
         .AddProperty("Greeting", new[] { "Hello World", "Bonjour le monde" });
@@ -159,6 +221,188 @@ namespace DymeExpansion.Samples.BrowserTests
     }
 
     [Test]
+    public void Pooling_Basic()
+    {
+      var actualGreetings = new List<string>();
+
+      // Define all the people that will be greeting. We don't care to much about what they say so we'll use a pool property to give them some greetings... 
+      var people = DymeConfig.New("PeopleConfig")
+        .AddProperty("Name", new[] { "Ali", "Bernice", "Chi", "David" })
+        .AddProperty("Greeting", new[] { "Hello World", "Bonjour le monde" }, ExpansionTypeEnum.pool);
+
+      // Generate the test cases...
+      var testCases = DymeCaseLoader.CasesFromConfig(people);
+
+      // Extract the data from our new test cases...
+      foreach (var testCase in testCases)
+      {
+        var finalGreeting = testCase["Name"] + " says " + testCase["Greeting"];
+        Debug.WriteLine(finalGreeting);
+        actualGreetings.Add(finalGreeting);
+      }
+
+      // Just to make sure that we have the right stuff...
+      var expectedGreetings = new[]
+      {
+        "Ali says Hello World",
+        "Bernice says Bonjour le monde",
+        "Chi says Hello World",
+        "David says Bonjour le monde",
+      };
+      CollectionAssert.AreEquivalent(expectedGreetings, actualGreetings);
+    }
+
+    [Test]
+    public void Pooling_WithComposition()
+    {
+      var actualGreetings = new List<string>();
+
+      // Define all the people that will be greeting. We don't care to much about what they say so we'll use a pool property to give them some greetings... 
+      var people = DymeConfig.New("PeopleConfig")
+        .AddProperty("Name", new[] { "Ali", "Bernice", "Chi", "David" });
+
+      var greetings = DymeConfig.New("GreetingConfig")
+        .AddProperty("Greeting", new[] { "Hello World", "Bonjour le monde" }, ExpansionTypeEnum.pool);
+
+      // Create a composition...
+      var main = DymeConfig.New("MainConfig")
+        .AddProperty("IMPORT", "PeopleConfig")
+        .AddProperty("IMPORT", "GreetingConfig");
+
+      // We'll create a library of configs...
+      var configLibrary = new[] { people, greetings };
+
+      // Generate the test cases...
+      var testCases = DymeCaseLoader.CasesFromConfig(main, configLibrary);
+
+      // Extract the data from our new test cases...
+      foreach (var testCase in testCases)
+      {
+        var name = testCase["Name"];
+        var greeting = testCase["Greeting"];
+        var finalGreeting = $"{name} says {greeting}";
+        Debug.WriteLine(finalGreeting);
+        actualGreetings.Add(finalGreeting);
+      }
+
+      // Just to make sure that we have the right stuff...
+      var expectedGreetings = new[]
+      {
+        "Ali says Hello World",
+        "Bernice says Bonjour le monde",
+        "Chi says Hello World",
+        "David says Bonjour le monde",
+      };
+      CollectionAssert.AreEquivalent(expectedGreetings, actualGreetings);
+    }
+
+    [Test]
+    public void Pooling_WithEncapsulation()
+    {
+      var actualGreetings = new List<string>();
+
+      // Define some people that will be greeting, and supply greetings pool to pick from... 
+      var people = DymeConfig.New("PeopleConfig")
+        .AddProperty("Name", new[] { "Ali", "Bernice", "Chi", "David" })
+        .AddProperty("Greeting", new[] { "Hello World", "Bonjour le monde" }, ExpansionTypeEnum.pool);
+
+      // Pets won't use the human greetings because they're encapsulated in the human config.
+      // Instead pets will use their own encapsulated greeting, which uses correlation instead...
+      var pets = DymeConfig.New("PetsConfig")
+        .AddProperty("Name", new[] { "Alpha-Dog", "Mini-Mouse", "Curious-Cat" }, "petSounds")
+        .AddProperty("Greeting", new[] { "Woof", "Squeek", "Meeow" }, "petSounds");
+      // ...This also demonstrates that with encapsulation, you can have two different behaviours for the same property.
+
+      var main = DymeConfig.New("MainConfig")
+        .AddProperty("IMPORT.Organisms", new[]{ "PeopleConfig", "PetsConfig" });
+
+      // Create config library...
+      var configLibrary = new[] { people, pets, main };
+
+      // Generate the test cases...
+      var testCases = DymeCaseLoader.CasesFromConfig(main, configLibrary);
+
+      // Extract the data from our new test cases...
+      foreach (var testCase in testCases)
+      {
+        var name = testCase["Name"];
+        var greeting = testCase.Has("Greeting") ? testCase["Greeting"] : "nothing";
+        var finalGreeting = $"{name} says {greeting}";
+        Debug.WriteLine(finalGreeting);
+        actualGreetings.Add(finalGreeting);
+      }
+
+      // Just to make sure that we have the right stuff...
+      var expectedGreetings = new[]
+      {
+        /// People stuff...
+        "Ali says Hello World",
+        "Bernice says Bonjour le monde",
+        "Chi says Hello World",
+        "David says Bonjour le monde",
+        /// Pet stuff...
+        "Alpha-Dog says Woof",
+        "Mini-Mouse says Squeek",
+        "Curious-Cat says Meeow",
+      };
+      CollectionAssert.AreEquivalent(expectedGreetings, actualGreetings);
+    }
+
+    [Test]
+    public void Pooling_WithCorrelation()
+    {
+      var actualGreetings = new List<string>();
+
+      // Define some people that will be greeting, and supply a greetings pool to pick from, 
+      // but also specify an explicit correlation key on the pool itself...
+      var people = DymeConfig.New("PeopleConfig")
+        .AddProperty("Name", new[] { "Ali", "Bernice", "Chi", "David" })
+        .AddProperty("Greeting", new[] { "Hello World", "Bonjour le monde" }, ExpansionTypeEnum.pool, "petSounds");
+      // ...Humans will get greetings even though they are not explicitly correlated 
+      // because they originate from the same config (PeopleConfig).
+
+      // Pets normally wouldn't use the human greetings because the greetings are encapsulated in the human config,
+      // but because we've specified a correlation between them (petSounds), 
+      // the Pets will now get access to the greetings despite encapsulation.
+      var pets = DymeConfig.New("PetsConfig")
+        .AddProperty("Name", new[] { "Alpha-Dog", "Mini-Mouse", "Curious-Cat" }, "petSounds");
+
+      var main = DymeConfig.New("MainConfig")
+        .AddProperty("IMPORT.Organisms", new[] { "PeopleConfig", "PetsConfig" });
+
+      // Create config library...
+      var configLibrary = new[] { people, pets, main };
+
+      // Generate the test cases...
+      var testCases = DymeCaseLoader.CasesFromConfig(main, configLibrary);
+
+      // Extract the data from our new test cases...
+      foreach (var testCase in testCases)
+      {
+        var name = testCase["Name"];
+        var greeting = testCase.Has("Greeting") ? testCase["Greeting"] : "nothing";
+        var finalGreeting = $"{name} says {greeting}";
+        Debug.WriteLine(finalGreeting);
+        actualGreetings.Add(finalGreeting);
+      }
+
+      // Just to make sure that we have the right stuff...
+      var expectedGreetings = new[]
+      {
+        /// People stuff...
+        "Ali says Hello World",
+        "Bernice says Bonjour le monde",
+        "Chi says Hello World",
+        "David says Bonjour le monde",
+        /// Pet stuff...
+        "Alpha-Dog says Hello World",
+        "Mini-Mouse says Bonjour le monde",
+        "Curious-Cat says Hello World",
+      };
+      CollectionAssert.AreEquivalent(expectedGreetings, actualGreetings);
+    }
+
+    [Test]
     public void Correlation_Basic()
     {
       var actualGreetings = new List<string>();
@@ -217,7 +461,7 @@ namespace DymeExpansion.Samples.BrowserTests
     }
 
     [Test]
-    public void Correlation_AcrossConfigs_Basic()
+    public void Correlation_WithComposition_Basic()
     {
       var actualGreetings = new List<string>();
 
@@ -281,7 +525,7 @@ namespace DymeExpansion.Samples.BrowserTests
 
     }
     [Test]
-    public void Correlation_AcrossConfigs()
+    public void Correlation_WithComposition()
     {
       var actualGreetings = new List<string>();
 
@@ -341,7 +585,6 @@ namespace DymeExpansion.Samples.BrowserTests
       antiGreetings.ForEach(antiGreeting => CollectionAssert.DoesNotContain(actualGreetings, antiGreeting));
     }
 
-
     [Test]
     public void Composition_Basic()
     {
@@ -397,7 +640,7 @@ namespace DymeExpansion.Samples.BrowserTests
     }
 
     [Test]
-    public void Composition_WithMultiValueImports()
+    public void Composition_WithEncapsulation()
     {
       var actualGreetings = new List<string>();
 

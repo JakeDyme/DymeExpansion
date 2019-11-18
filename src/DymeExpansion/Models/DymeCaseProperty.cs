@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using DymeExpansion.Core.Enums;
 
 namespace DymeExpansion.Core.Models
@@ -8,10 +9,15 @@ namespace DymeExpansion.Core.Models
   {
     public string Name { get;set;}
     public string Value { get; set; }
+    public string CorrelationKey { get; set; }
+    public ExpansionTypeEnum ExpansionType { get; set; } = ExpansionTypeEnum.expansive;
+
+    // Tracking
     internal int PropertyIndex { get; set; }
     internal int ValueIndex { get; set; }
-    internal ExpansionTypeEnum ExpansionType { get; set; } = ExpansionTypeEnum.expansive;
-    public string CorrelationKey { get; set; }
+    public string OriginPath { get; set; }
+    public string[] OriginConfigPath { get; set; }
+    
     public DymeCaseProperty() { }
     
     public DymeCaseProperty(string name,  string value, string correlationKey = null){

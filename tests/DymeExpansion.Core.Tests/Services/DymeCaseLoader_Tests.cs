@@ -149,7 +149,7 @@ namespace DymeExpansion.Core.Tests.Services
       var config = DymeConfig.New("TestConfig")
         .AddProperty("a", new[] { "1", "2" }, "1")
         .AddProperty("b", new[] { "1", "2" }, "1")
-        .AddProperty("c", "1", "2");
+        .AddProperty("c", "1");
 
       var expectedCases = new[]{
         "p:a(1) p:b(1) p:c(1)",
@@ -166,10 +166,102 @@ namespace DymeExpansion.Core.Tests.Services
     }
 
     [Test]
+    public void PoolProperties_GivenSameAmountOfValues_ExpectValuesAreCorrelated()
+    {
+      // Arrange...
+      var config = DymeConfig.New("TestConfig")
+        .AddProperty("a", new[] { "1", "2" })
+        .AddProperty("b", new[] { "1", "2" }, ExpansionTypeEnum.pool);
+
+      var expectedCases = new[]{
+        "p:a(1) p:b(1)",
+        "p:a(2) p:b(2)"
+      };
+
+      // Act...
+      var testCases = DymeCaseLoader.CasesFromConfig(config);
+
+      // Assert
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
+      Assert.AreEqual(2, testCases.Count());
+      CollectionAssert.AreEquivalent(expectedCases, testCaseString);
+    }
+
+    [Test]
+    public void PoolProperties_GivenLessPoolProperties_ExpectPoolPropertiesAreRecycled()
+    {
+      // Arrange...
+      var config = DymeConfig.New("TestConfig")
+        .AddProperty("a", new[] { "1", "2", "3", "4" })
+        .AddProperty("b", new[] { "1", "2" }, ExpansionTypeEnum.pool);
+
+      var expectedCases = new[]{
+        "p:a(1) p:b(1)",
+        "p:a(2) p:b(2)",
+        "p:a(3) p:b(1)",
+        "p:a(4) p:b(2)"
+      };
+
+      // Act...
+      var testCases = DymeCaseLoader.CasesFromConfig(config);
+
+      // Assert
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
+      CollectionAssert.AreEquivalent(expectedCases, testCaseString);
+    }
+
+    [Test]
+    public void PoolProperties_GivenBuriedInConfig_AppropriateUsage()
+    {
+      // Arrange...
+      var config1 = DymeConfig.New("TestConfig1")
+        .AddProperty("b", new[] { "1", "2" }, ExpansionTypeEnum.pool);
+
+      var config2 = DymeConfig.New("TestConfig2")
+        .AddProperty("IMPORT", "TestConfig1")
+        .AddProperty("a", new[] { "1", "2", "3", "4" });
+
+      var expectedCases = new[]{
+        "p:a(1) p:b(1)",
+        "p:a(2) p:b(2)",
+        "p:a(3) p:b(1)",
+        "p:a(4) p:b(2)"
+      };
+
+      // Act...
+      var testCases = DymeCaseLoader.CasesFromConfig(config2, new []{ config1 });
+
+      // Assert
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
+      CollectionAssert.AreEquivalent(expectedCases, testCaseString);
+    }
+
+    [Test]
+    public void PoolProperties_GivenMorePoolProperties_ExpectExtraPoolPropertiesAreDropped()
+    {
+      // Arrange...
+      var config = DymeConfig.New("TestConfig")
+        .AddProperty("a", new[] { "1", "2" })
+        .AddProperty("b", new[] { "1", "2", "3", "4" }, ExpansionTypeEnum.pool);
+
+      var expectedCases = new[]{
+        "p:a(1) p:b(1)",
+        "p:a(2) p:b(2)"
+      };
+
+      // Act...
+      var testCases = DymeCaseLoader.CasesFromConfig(config);
+
+      // Assert
+      var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
+      CollectionAssert.AreEquivalent(expectedCases, testCaseString);
+    }
+
+    [Test]
     public void CorrelationSameConfigs()
     {
       // Arrange...
-      var config = DymeConfig.New("TestConfig2")
+      var config = DymeConfig.New("TestConfig")
         .AddProperty("a", new[] { "1", "2" }, "correlationKey")
         .AddProperty("b", new[] { "1", "2" }, "correlationKey");
 
@@ -183,7 +275,6 @@ namespace DymeExpansion.Core.Tests.Services
 
       // Assert
       var testCaseString = testCases.Select(tc => new DymeCaseLoader().CaseToString(tc)).ToList();
-      Assert.AreEqual(2, testCases.Count());
       CollectionAssert.AreEquivalent(expectedCases, testCaseString);
     }
 
