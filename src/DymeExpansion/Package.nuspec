@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>DymeExpansion</id>
-    <version>1.3.0</version>
+    <version>1.3.1</version>
     <authors>Jake Dyme</authors>
     <description>
       Allows you to make configs that will be expanded into cases. Cases could be used as test-data, or to create application config, or any general table-like data.
@@ -19,8 +19,9 @@
     </dependencies>
     <repository type="git" url="https://github.com/JakeDyme/DymeExpansion" branch="master" />
     <frameworkAssemblies>
+      <frameworkAssembly assemblyName="DymeExpansion.Core" targetFramework="netcoreapp2.1" />
       <frameworkAssembly assemblyName="DymeExpansion.Core" targetFramework="netcoreapp2.2" />
-	  <frameworkAssembly assemblyName="DymeExpansion.Core" targetFramework="netcoreapp3.0" />
+	    <frameworkAssembly assemblyName="DymeExpansion.Core" targetFramework="netcoreapp3.0" />
     </frameworkAssemblies>  
   </metadata>
 </package>
