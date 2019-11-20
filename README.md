@@ -1,29 +1,36 @@
 # DymeExpansion
 
 #### What is it?
+
 - A tool for generating many cases from a small amount of configuration.
 - A C# dotnet core library, available on Nuget.
-  
+
 #### Where or when should I use it?
+
 - When you're wanting to create many test-cases for the sake of testing.
 
-# Usage 
+# Usage
+
 #### Basic usage
+
 1. Create a config or/and a config library.
 2. Use **DymeCaseLoader.CasesFromConfig** to generate test cases.
 3. Love thy neighbour.
 
 #### Terminology
+
 - Expansion: The creation of many test cases from fewer configs.
-- Inheritence: Importing one config into another (or many depending on the expansion).
+- Inheritance: Importing one config into another (or many depending on the expansion).
 - Interpolation: Using a value from your test case by injecting it into your content.
 - Correlation: Grouping properties so that their values correspond to one another.
-- Composition: Creating a config by by importing one or more other configs. 
-  
+- Composition: Creating a config by by importing one or more other configs.
+
 ## Expansions
-Expansions are properties in a config that have multiple values. If all properties only have one value, then exactly one test case will be generated, but if even one property has more than one value, then multple test cases will be generated. Expansions allow you to easily add data to your configs, and have the system generate more test cases as you do.
+
+Expansions are properties in a config that have multiple values. If all properties only have one value, then exactly one test case will be generated, but if even one property has more than one value, then multiple test cases will be generated. Expansions allow you to easily add data to your configs, and have the system generate more test cases as you do.
 
 ### Example: Simple Expansion
+
 ```C#
 // Create some config using the "DymeConfig" class...
 var testConfig = DymeConfig.New("HelloWorld")
@@ -33,7 +40,7 @@ var testConfig = DymeConfig.New("HelloWorld")
 // Generate test cases using the "DymeCaseLoader" class...
 var testCases = DymeCaseLoader.CasesFromConfig(testConfig);
 
-// Use the data from test cases...
+// Use the data from the test cases...
 foreach (var testCase in testCases)
 {
   var greeting = testCase["Name"] + " says " + testCase["Greeting"];
@@ -48,17 +55,21 @@ Ali says Bonjour le monde
 --------------------------------
 /*
 ```
-## Encapsulation & Inheritence
-Encapsulation, in this system, means bundeling data into discreet packets of related information, or configs. Keeping related data together makes your configs much easier to maintain. You can then use inheritence to bind the data back together by referencing configs from other configs using the IMPORT property.
-### Example: Simple Inheritence
+
+## Encapsulation & Inheritance
+
+Encapsulation, in this system, means bundling data into discreet packets of related information, or configs. Keeping related data together makes your configs much easier to maintain. You can then use inheritance to bind the data back together by referencing configs from other configs using the IMPORT property.
+
+### Example: Simple Inheritance
+
 ```C#
 // Put all person related info into one config...
 var people = DymeConfig.New("PeopleConfig")
   .AddProperty("Name", new []{"Ali", "Brian" } );
 
 // ...and all greeting related info into another config.
-// To bind the data back together, we'll import the people config 
-// using the IMPORT keyword as the property name, 
+// To bind the data back together, we'll import the people config
+// using the IMPORT keyword as the property name,
 // and the config name as the property value...
 var greetings = DymeConfig.New("GreetingConfig")
   .AddProperty("IMPORT", "PeopleConfig")
@@ -88,7 +99,8 @@ Brian says Bonjour le monde
 /*
 ```
 
-### Example: Encapsulated Inheritence
+### Example: Encapsulated Inheritance
+
 ```C#
 // First lets define some people..
 var ali = DymeConfig.New("AliConfig")
@@ -111,12 +123,12 @@ var configLibrary = new[] { ali, bernice, greetings };
 
 //...and then pass the library into the case loader,
 // along with the config that we want to interpret...
-var testCases = DymeCaseLoader.CasesFromConfig(greetings, configLibrary); 
+var testCases = DymeCaseLoader.CasesFromConfig(greetings, configLibrary);
 
 // Note: The passed in config library is used to resolve any "IMPORT" references,
-// So if you know ahead of time which configs are going to be referenced, 
-// then you could filter your library first. 
-// Alternatively, you could just pass in all your configs 
+// So if you know ahead of time which configs are going to be referenced,
+// then you could filter your library first.
+// Alternatively, you could just pass in all your configs
 // and let the engine pick them out as it needs.
 
 // Process your test cases...
@@ -143,9 +155,11 @@ Bernice Newton (a 35 year old female) says Bonjour le monde
 -------------------------------------------------------------
 */
 ```
-So what exactly happenned that was important? <br>
+
+So what exactly happened that was important? <br>
 What has encapsulation done for us? <br>
 Well, because of encapsulation, we did not incorrectly output the following:
+
 ```C#
 /*
 -------------------------------------------------------------
@@ -154,9 +168,13 @@ Bernice Newton (a 40 year old male) says Hello World
 -------------------------------------------------------------
 */
 ```
+
 ## Correlation
+
 Another way to bundle data is to correlate properties. This can be done by adding a common correlation key to the properties that you want to correlate. Correlated properties must have the same number of values.
+
 ### Example: Correlation
+
 ```C#
 // Define properties with multiple values, and then correlate those properties with a correlation key...
 var people = DymeConfig.New("PeopleConfig")
@@ -208,9 +226,11 @@ Bernice Newton (a 40 year old male) says Bonjour le monde
 ```
 
 ## Composition
+
 You can import configs one after the other, creating a composition of imported configs.<br>
-Conflicting properties will be overridded by subsequent configs. In other words, the first imported config can be thought of as a default config, over which the next config wll be overlayed. <br>
-Properties in the current config will override conflicting properties from any imported config.  
+Conflicting properties will be overridden by subsequent configs. In other words, the first imported config can be thought of as a default config, over which the next config will be overlaid. <br>
+Properties in the current config will override conflicting properties from any imported config.
+
 ```C#
 var actualGreetings = new List<string>();
 
@@ -257,7 +277,9 @@ Ali says Bon achat
 ---------------------------------
 */
 ```
+
 ## Pooling
+
 A pool-property is a special type of property.<br>
 It does not expand the case-set by having multiple values, it only complements the final case-set with its values. <br>
 Any property can be made into a pool-property by setting the "ExpansionType" to "pool". <br>
@@ -265,9 +287,10 @@ If there are more cases than values in the pool-set, then the values from the po
 If the pool-set has more values than the case-set, then the extra values are discarded.<br>
 Values are picked from the pool-set iteratively from beginning to end, and then starts at the beginning again.<br>
 Pool properties are applied to any case that derives from the config in which the property was defined, or, in any case that contains a property that shares a correlation key with the pool property (if correlation is explicitly defined).
+
 ```C#
 // Define 4 people that will be greeting,
-// and create a greeting pool to select greetings from... 
+// and create a greeting pool to select greetings from...
 var people = DymeConfig.New("PeopleConfig")
   .AddProperty("Name", new[] { "Ali", "Bernice", "Chi", "David" })
   .AddProperty("Greeting", new[] { "Hello World", "Bonjour le monde" }, ExpansionTypeEnum.pool);
@@ -292,10 +315,10 @@ David says Bonjour le monde
 */
 ```
 
-
 ## More Examples
 
 ### Testing a website on different devices
+
 ```C#
 var configLibrary = new List<DymeConfig>{
   // Device farm details...
@@ -370,17 +393,18 @@ On iPhone 7 Simulator, launch https://www.facebook.com, and click btnGgleSearch
 ```
 
 ### Thirty Three Thousand test cases!
+
 ```C#
 // Create config library...
 var configLibrary = new List<DymeConfig> {
-  
+
   DymeConfig.New("Application")
     .AddProperty("version", new[]{"1.0","1.5","2.0" }),
 
   DymeConfig.New("User")
     .AddProperty("IMPORT", "Application")
     .AddProperty("user", new[]{
-      "alice","bob","cathy","dave","eve","frank","grant","harry", "ivan" 
+      "alice","bob","cathy","dave","eve","frank","grant","harry", "ivan"
       }),
 
   DymeConfig.New("Vehicle")
@@ -390,7 +414,7 @@ var configLibrary = new List<DymeConfig> {
     .AddProperty("condition", new[]{"new", "used" })
     .AddProperty("type", new[]{"convertible", "suv", "4x4", "hatchback", "sudan" })
     .AddProperty("feature", new[]{
-      "airbags", "electric_windows", "seat_warmer", "adjustable_steering", "backwiper" 
+      "airbags", "electric_windows", "seat_warmer", "adjustable_steering", "backwiper"
       })
 };
 
