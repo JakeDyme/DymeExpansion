@@ -17,7 +17,7 @@
     <tags>Dyme Expansion Configuration Automation Tests</tags>
     <dependencies>
     </dependencies>
-    <repository type="git" url="https://github.com/NuGet/NuGet.Client.git" branch="master" />
+    <repository type="git" url="https://github.com/JakeDyme/DymeExpansion" branch="master" />
     <frameworkAssemblies>
       <frameworkAssembly assemblyName="DymeExpansion.Core" targetFramework="netcoreapp2.2" />
 	  <frameworkAssembly assemblyName="DymeExpansion.Core" targetFramework="netcoreapp3.0" />
