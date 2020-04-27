@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Diagnostics;
 using DymeExpansion.Core.Enums;
 
@@ -14,7 +14,8 @@ namespace DymeExpansion.Core.Models
 
     // Tracking
     internal int PropertyIndex { get; set; }
-    internal int ValueIndex { get; set; }
+    internal int ValueIndexFromOriginalList { get; set; }
+    public string CorrelationPath { get; set; }
     public string OriginPath { get; set; }
     public string[] OriginConfigPath { get; set; }
     

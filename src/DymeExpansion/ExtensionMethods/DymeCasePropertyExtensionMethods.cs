@@ -17,7 +17,7 @@ namespace DymeExpansion.Core.ExtensionMethods
         OriginPath = property.OriginPath, 
         PropertyIndex = property.PropertyIndex, 
         Value = property.Value, 
-        ValueIndex = property.ValueIndex
+        ValueIndexFromOriginalList = property.ValueIndexFromOriginalList
       };
     }
   }
